@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 68 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 76 passing (`npm test`)
 
 ## Status
 
@@ -14,7 +14,7 @@ instead if the design itself changes.
 | M0 | Project setup (this session) | ✅ Done |
 | M1 | Ephemeris search module (`src/ephemeris/`) | ✅ Done |
 | M2 | Solver (`src/solver/`) | ✅ Done |
-| M3 | Quiz content & scoring (`src/quiz/`) | ⬜ Not started |
+| M3 | Quiz content & scoring (`src/quiz/`) | 🟡 Engine done; question bank to author |
 | M4 | UI (quiz flow, results screen) | ⬜ Not started |
 | M5 | Jupiter/Saturn quiz questions (optional) | ⬜ Not started |
 
@@ -151,10 +151,24 @@ a `Target` for M1's search:
 - The two degree-mapping constants in `degreeFrom` remain the main dials for how
   the quiz "feels"; tune once M3 produces real vector shapes.
 
+## M3a — Quiz scoring engine (done 2026-07-04)
+
+`src/quiz/score.ts`: the question data model (`Question`/`Option`/`AxisLoad`, with
+options able to dual-load several placements) and `scoreQuiz(questions, answers)`,
+which accumulates element/modality loadings per placement and projects them onto
+the 12 signs → the `ScoreVectors` the solver consumes. Element outweighs modality
+(`ELEMENT_WEIGHT`/`MODALITY_WEIGHT`, tunable). Tested: element/modality extremes
+land on the expected signs, dual-loading, unanswered → flat, and a
+scoreQuiz→solve integration.
+
 ## Next up
 
-**M3 — Quiz content & scoring** (`src/quiz/`): the ~24-question bank as data
-(text, options, per-option element/modality loadings, planet assignment) and the
-scoring engine that maps answers → the six score vectors `solve()` consumes.
-Then M4 (UI + Web Worker search). The `decisiveness` mapping constants in the
-solver should be revisited once real quizzes produce real vector shapes.
+**M3b — Question bank** (`src/quiz/questions.ts`): author the actual ~24 questions
+(4 per placement) — worded questions, options, and their element/modality
+loadings, plus the mid-quiz breather. This is content/product work to do *with*
+Brad (astrological voice, which questions dual-load), not to autogenerate. The
+engine and solver already consume whatever the bank produces.
+
+Then **M4** (UI: quiz flow, Web Worker search, results screen). Revisit the
+solver's `degreeFrom` dials and the quiz's element/modality weight once real
+questions produce real vector shapes.
