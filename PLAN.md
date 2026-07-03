@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 60 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 65 passing (`npm test`)
 
 ## Status
 
@@ -13,7 +13,7 @@ instead if the design itself changes.
 |---|---|---|
 | M0 | Project setup (this session) | ✅ Done |
 | M1 | Ephemeris search module (`src/ephemeris/`) | ✅ Done |
-| M2 | Solver (`src/solver/`) | ⬜ Not started |
+| M2 | Solver (`src/solver/`) | ✅ Done |
 | M3 | Quiz content & scoring (`src/quiz/`) | ⬜ Not started |
 | M4 | UI (quiz flow, results screen) | ⬜ Not started |
 | M5 | Jupiter/Saturn quiz questions (optional) | ⬜ Not started |
@@ -123,8 +123,27 @@ Building per SPEC.md's own ordering ("riskiest first"). Done so far:
     among them (why the tail scans many years). A bound that accounts for the
     unavoidable Sun/degree deficit would prune far more.
 
+## M2 — Solver (done 2026-07-04)
+
+`src/solver/solve.ts` turns the quiz's six per-planet 12-sign score vectors into
+a `Target` for M1's search:
+
+- Sun/Mercury/Venus solved jointly (brute force over 12 Suns; Mercury/Venus take
+  their best sign within ±1/±2 of each candidate Sun) so a marginal Sun flips
+  when it unlocks a stronger Mercury/Venus. Moon/ASC/Mars picked independently.
+- Each placement's **confidence** and **target degree** come from one
+  scale-invariant `decisiveness` (0..1) of the chosen sign: landslide → high
+  confidence + solidly placed (~7°); coin-flip or constraint-forced → low
+  confidence + cuspy (~27°). The two mapping constants in `placementFrom` are the
+  main dials for how decisive/flexible the whole quiz feels — tune once M3 exists.
+- Tested (`solve.test.ts`): independent winners, landslide/coin-flip mapping,
+  Mercury/Venus pulled off their raw winners by the constraint, a marginal-Sun
+  flip, and a solve→search integration proving the Target is realisable.
+
 ## Next up
 
-**M2 — Solver** (`src/solver/`): score vectors → constrained sign assignment +
-confidence weights + target degrees, feeding the `Target` that M1's `search`
-already consumes. Then M3 (quiz content) and M4 (UI + Web Worker).
+**M3 — Quiz content & scoring** (`src/quiz/`): the ~24-question bank as data
+(text, options, per-option element/modality loadings, planet assignment) and the
+scoring engine that maps answers → the six score vectors `solve()` consumes.
+Then M4 (UI + Web Worker search). The `decisiveness` mapping constants in the
+solver should be revisited once real quizzes produce real vector shapes.
