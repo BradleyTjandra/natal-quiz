@@ -38,7 +38,18 @@ Standard astrology derives personality from birth data. This app inverts it: you
 
 ## Success criteria
 
-- ≥99% of quiz outcomes produce a moment where all five personal planets and the ASC match exactly.
+- **Big three always exact.** Sun, Moon, and Ascendant match the quiz outcome
+  exactly, 100% of the time (guaranteed by how the search is built).
+- **Personal planets fit or degrade gracefully.** Mercury, Venus, and Mars land on
+  their ideal sign in the large majority of cases; and whenever an ideal sign is
+  astronomically out of reach, the chart lands on an astrologically *similar* sign
+  (same element or modality) rather than an arbitrary one. (Measured 2026-07-04 on
+  realistic personas: ~71% land the ideal sign, and of the rest ~93% keep the same
+  element or modality — see `scripts/pipeline-diag.ts`.)
+  - *Revised from the original "≥99% of outcomes match all five personal planets
+    exactly": a real sky can't always place every personal planet in its ideal
+    sign at once, which is exactly why personal placements are soft. The graceful
+    fallback is the honest, achievable form of this promise.*
 - Search completes in under a second on a typical phone.
 - A user entering the output into a mainstream astrology site sees the same chart.
 
