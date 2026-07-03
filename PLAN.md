@@ -32,6 +32,9 @@ instead if the design itself changes.
   in this repo).
 - Local git repo initialized. No GitHub remote yet — deliberately deferred until
   the user is ready to push.
+  - **Before the first push:** the local branch is `master` but `deploy.yml`
+    triggers on `main`. Reconcile them (rename the branch with `git branch -m
+    master main`, or change the workflow's trigger) or the deploy won't fire.
 - No linter or test framework yet. SPEC.md's M1 test plan ("generate 500+ synthetic
   targets...") needs a test runner — plan is to add Vitest when M1 starts, not before.
 
