@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-03
+**Last updated:** 2026-07-04
 
 ## Status
 
@@ -53,12 +53,24 @@ Building per SPEC.md's own ordering ("riskiest first"). Done so far:
     confirmed to land on the eastern horizon (altitude ≈ 0, rising) across four
     cities in both hemispheres.
 - Test runner: Vitest (`npm test`).
+- **Ephemeris engine decision:** staying with `astronomy-engine` (pure-JS,
+  browser-friendly, MIT-licensed, matches mainstream sites to ~0.01°). Swiss
+  Ephemeris would only win for exact-degree precision centuries in the past, at
+  the cost of AGPL licensing + multi-MB data files — not worth it here, and the
+  choice is contained to `src/ephemeris/` if it ever changes.
+- **Stage 0 — ingress tables done:** `ingress.ts` finds every sign change for a
+  body over a date range (walk + bisection to the hour); verified against the
+  library's equinox/solstice instants and for internal consistency, including
+  retrograde crossings. `scripts/generate-ingress.ts` (run via `npm run
+  gen:ingress`) emits `src/ephemeris/data/ingress.json` — Mars/Jupiter/Saturn
+  sign changes, ~208 KB. Reuses the same verified sky code, so it can't drift.
+- **Year range:** provisionally **1600–2100** (`config.ts`), where degrees still
+  match Swiss-Ephemeris sites well. Widening toward ~1000 AD is a one-line change
+  + regenerate, pending the accuracy spot-check below.
 
 Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
 
-- Confirm the usable year range (how far back astronomy-engine stays accurate).
-- Stage 0: ingress-table generator (Node script → static JSON) for Jupiter,
-  Saturn, Mars sign-change dates.
+- Spot-check displayed-degree accuracy at old dates before widening the year range.
 - Stages 1–4: the hierarchical best-first search (years → days → planets →
   degrees/city/minute).
 - Weighting hierarchy + the relaxation path (bend Mars, then Venus, then Mercury;
@@ -68,4 +80,5 @@ Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
 
 ## Next up
 
-Continue M1: decide the year range, then build the ingress tables (Stage 0).
+Continue M1: Stage 1 of the search — rank candidate years using the ingress
+tables (Jupiter/Saturn fit; skip years where Mars can't reach the target sign).

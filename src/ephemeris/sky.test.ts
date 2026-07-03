@@ -13,7 +13,12 @@ import {
   normalizeDegrees,
   formatPosition,
 } from "./signs.ts";
-import { eclipticLongitude, ascendant, computeChart } from "./sky.ts";
+import {
+  eclipticLongitude,
+  ascendant,
+  computeChart,
+  type ChartBody,
+} from "./sky.ts";
 
 describe("sign arithmetic", () => {
   it("maps longitudes to the right sign", () => {

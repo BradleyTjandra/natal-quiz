@@ -4,7 +4,18 @@
 // the piece that must be correct for the whole conceit (a verifiable chart) to
 // hold. See sky.test.ts for the accuracy checks.
 
-import * as Astronomy from "astronomy-engine";
+import {
+  Body,
+  SunPosition,
+  EclipticGeoMoon,
+  GeoVector,
+  Rotation_EQJ_ECT,
+  RotateVector,
+  SphereFromVector,
+  SiderealTime,
+  e_tilt,
+  MakeTime,
+} from "astronomy-engine";
 import { normalizeDegrees } from "./signs.ts";
 
 // The bodies we place in a chart. Neptune and Pluto are intentionally excluded
@@ -32,18 +43,16 @@ export function eclipticLongitude(
   date: Date,
 ): number {
   if (body === "Sun") {
-    return Astronomy.SunPosition(date).elon;
+    return SunPosition(date).elon;
   }
   if (body === "Moon") {
-    return Astronomy.EclipticGeoMoon(date).lon;
+    return EclipticGeoMoon(date).lon;
   }
   // Planets: take the geocentric position vector, then rotate it from the
   // J2000 frame into the true-ecliptic-of-date frame and read its longitude.
-  const bodyEnum = Astronomy.Body[body];
-  const geoVector = Astronomy.GeoVector(bodyEnum, date, true);
-  const rotation = Astronomy.Rotation_EQJ_ECT(date);
-  const ectVector = Astronomy.RotateVector(rotation, geoVector);
-  const spherical = Astronomy.SphereFromVector(ectVector);
+  const geoVector = GeoVector(Body[body], date, true);
+  const ectVector = RotateVector(Rotation_EQJ_ECT(date), geoVector);
+  const spherical = SphereFromVector(ectVector);
   return normalizeDegrees(spherical.lon);
 }
 
@@ -60,11 +69,11 @@ export function ascendant(
   longitudeEast: number,
 ): number {
   // Local apparent sidereal time, expressed as an angle (the "RAMC").
-  const gastHours = Astronomy.SiderealTime(date);
+  const gastHours = SiderealTime(date);
   const localSiderealDeg = normalizeDegrees(gastHours * 15 + longitudeEast);
   const ramc = localSiderealDeg * DEG;
 
-  const obliquity = Astronomy.e_tilt(Astronomy.MakeTime(date)).tobl * DEG;
+  const obliquity = e_tilt(MakeTime(date)).tobl * DEG;
   const lat = latitude * DEG;
 
   const y = Math.cos(ramc);
