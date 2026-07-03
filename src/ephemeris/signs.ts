@@ -26,9 +26,14 @@ export function normalizeDegrees(longitude: number): number {
   return ((longitude % 360) + 360) % 360;
 }
 
+// Sign as an index 0..11 (0 = Aries). The raw number is often more convenient
+// than the name for arithmetic (distance between signs, table lookups).
+export function signIndexOf(longitude: number): number {
+  return Math.floor(normalizeDegrees(longitude) / 30);
+}
+
 export function signOf(longitude: number): Sign {
-  const index = Math.floor(normalizeDegrees(longitude) / 30);
-  return SIGNS[index];
+  return SIGNS[signIndexOf(longitude)];
 }
 
 // Degrees elapsed within the current sign, 0–30.

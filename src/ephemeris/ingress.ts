@@ -6,7 +6,7 @@
 // lookup between two ingress dates rather than an astronomy calculation.
 
 import { eclipticLongitude, type ChartBody } from "./sky.ts";
-import { normalizeDegrees } from "./signs.ts";
+import { signIndexOf } from "./signs.ts";
 
 export interface Ingress {
   date: string; // ISO UTC instant the body enters `sign`
@@ -16,19 +16,15 @@ export interface Ingress {
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
-function signIndex(longitude: number): number {
-  return Math.floor(normalizeDegrees(longitude) / 30);
-}
-
 // Narrow a one-step interval known to contain a single sign change down to the
 // crossing instant (to within an hour) by repeated halving.
 function refineCrossing(body: ChartBody, before: Date, after: Date): Date {
-  const startSign = signIndex(eclipticLongitude(body, before));
+  const startSign = signIndexOf(eclipticLongitude(body, before));
   let lo = before.getTime();
   let hi = after.getTime();
   while (hi - lo > HOUR_MS) {
     const mid = (lo + hi) / 2;
-    const midSign = signIndex(eclipticLongitude(body, new Date(mid)));
+    const midSign = signIndexOf(eclipticLongitude(body, new Date(mid)));
     if (midSign === startSign) {
       lo = mid;
     } else {
@@ -52,16 +48,16 @@ export function computeIngresses(
   const ingresses: Ingress[] = [];
 
   let prevTime = start;
-  let prevSign = signIndex(eclipticLongitude(body, start));
+  let prevSign = signIndexOf(eclipticLongitude(body, start));
 
   for (let t = start.getTime() + step; t <= end.getTime(); t += step) {
     const now = new Date(t);
-    const nowSign = signIndex(eclipticLongitude(body, now));
+    const nowSign = signIndexOf(eclipticLongitude(body, now));
     if (nowSign !== prevSign) {
       const crossing = refineCrossing(body, prevTime, now);
       ingresses.push({
         date: crossing.toISOString(),
-        sign: signIndex(eclipticLongitude(body, crossing)),
+        sign: signIndexOf(eclipticLongitude(body, crossing)),
       });
     }
     prevTime = now;

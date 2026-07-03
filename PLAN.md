@@ -67,19 +67,27 @@ Building per SPEC.md's own ordering ("riskiest first"). Done so far:
 - **Year range:** provisionally **1600–2100** (`config.ts`), where degrees still
   match Swiss-Ephemeris sites well. Widening toward ~1000 AD is a one-line change
   + regenerate, pending the accuracy spot-check below.
+- **Scoring objective done:** `scoring.ts` — the single number the search
+  maximizes. Big three guaranteed by construction (contribute degree fit only);
+  personal planets soft, reward scaled by quiz confidence (decisive answers
+  expensive to miss); social low weight. `scoreChart`, `maxScore`, `fullReward`.
+  Tested for confidence scaling, the tier exchange rate, and degree tapering.
+- **Stage 1 done:** `stage1.ts` + `ingressTables.ts` — per-year upper bound
+  (Mars reachability in the Sun window from the ingress tables; everything else
+  best-case) and best-bound-first `rankYears`. Bound proven a valid upper bound
+  and cross-checked against the real sky (a year scores max iff Mars truly
+  reaches its target sign during the Sun window). Ingress JSON imported with a
+  `with { type: "json" }` attribute so it loads under Vite, Vitest, and Node.
 
 Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
 
 - Spot-check displayed-degree accuracy at old dates before widening the year range.
-- The scoring objective: big three exact by construction; personal planets
-  (Mercury/Venus/Mars) scored as **soft, confidence-weighted** penalties (not
-  filtered); social planets low soft weight; plus degree-fit score.
-- Stage 1 (years, **branch-and-bound**): per-year upper-bound score from the
-  ingress tables (Jup/Sat actual + Mars best-case + max possible personal/degree);
-  walk years best-bound-first; stop once the best real candidate beats every
-  remaining year's ceiling (provably optimal — no relaxation path).
 - Stages 2–4: Moon-match days in the Sun window → score Mercury/Venus/Mars
   (nothing discarded) → degrees/city/minute for ASC + Moon degree fit.
+- The branch-and-bound loop: walk `rankYears` best-first, keep the best real
+  candidate, stop once it beats every remaining year's bound. Optimization:
+  `rankYears` currently does 2 Sun-position searches/year (~0.6 s for all 500);
+  the Sun window barely moves year to year, so compute it once and reuse.
 - The M1 acceptance test: 500+ synthetic targets; assert Sun/Moon/ASC always
   exact; log personal-planet match rate (high when quiz confidence is high) and
   runtime; verify branch-and-bound optimality against exhaustive search on a
@@ -87,5 +95,5 @@ Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
 
 ## Next up
 
-Continue M1: build the scoring objective + Stage 1 (branch-and-bound year ranking
-using the ingress-table upper bounds).
+Continue M1: Stages 2–4 (day/degree evaluation) and the branch-and-bound loop
+that ties Stage 1's ranking into a full search returning a real birth moment.
