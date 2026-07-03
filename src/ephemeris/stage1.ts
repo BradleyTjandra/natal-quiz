@@ -13,7 +13,7 @@
 
 import { SearchSunLongitude } from "astronomy-engine";
 import { INGRESS_RANGE, signsInWindow } from "./ingressTables.ts";
-import { fullReward, type Target, type Placement } from "./scoring.ts";
+import { fullReward, reachableReward, type Target, type Placement } from "./scoring.ts";
 
 export interface SunWindow {
   start: Date;
@@ -57,9 +57,13 @@ export function yearUpperBound(target: Target, year: number): number {
   let bound = 0;
   for (const key of Object.keys(target) as Placement[]) {
     const t = target[key]!;
-    // Mars is the only placement whose best case depends on the year.
-    if (key === "mars" && marsSigns && !marsSigns.has(t.sign)) continue;
-    bound += fullReward(key, t);
+    // Mars is the only placement whose best case depends on the year: cap its
+    // contribution to the best it can do among the signs it actually visits.
+    if (key === "mars" && marsSigns) {
+      bound += reachableReward("mars", t, marsSigns);
+    } else {
+      bound += fullReward(key, t);
+    }
   }
   return bound;
 }

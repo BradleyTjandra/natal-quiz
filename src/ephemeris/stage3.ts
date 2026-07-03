@@ -34,17 +34,17 @@ export function personalSignScore(target: Target, instant: Date): number {
   for (const body of PERSONAL) {
     const t = target[keyOf(body)];
     if (!t) continue;
-    if (signIndexOf(eclipticLongitude(body, instant)) === t.sign) {
-      total += SIGN_WEIGHT.personal * t.confidence;
-    }
+    const landed = signIndexOf(eclipticLongitude(body, instant));
+    const weight = t.reward ? t.reward[landed] : landed === t.sign ? t.confidence : 0;
+    total += SIGN_WEIGHT.personal * weight;
   }
 
   for (const body of SOCIAL) {
     const t = target[keyOf(body)];
     if (!t) continue;
-    if (signAt(body, instant) === t.sign) {
-      total += SIGN_WEIGHT.social * t.confidence;
-    }
+    const landed = signAt(body, instant);
+    const weight = t.reward ? t.reward[landed] : landed === t.sign ? t.confidence : 0;
+    total += SIGN_WEIGHT.social * weight;
   }
 
   return total;

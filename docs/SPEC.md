@@ -26,9 +26,16 @@ Three layers, in data-flow order:
   - Mercury within ±1 sign of Sun
   - Venus within ±2 signs of Sun
 - Joint space is tiny (12 Sun × 3 Mercury × 5 Venus; other planets independent) — brute force.
-- For each planet, derive from the score margin (winner vs runner-up):
-  - **Confidence weight** — landslide = non-negotiable in search; coin-flip = flexible.
-  - **Target degree** — map normalised margin to 0–29° (landslide → ~5–10° solidly placed; narrow → ~25–29° cuspy).
+- **Big three (Sun/Moon/ASC):** hard single sign. Derive a **confidence** (from the
+  winner-vs-runner-up margin) that scales the degree reward, plus a **target degree**
+  (normalised margin → 0–29°: landslide → ~5–10° solidly placed; narrow → ~25–29° cuspy).
+- **Soft planets (Mercury/Venus/Mars):** carry the whole normalised 12-sign **reward
+  profile** rather than a single sign, so the search can reward the planet by how well
+  the sign it *actually lands on* fits — a bent Gemini falls to Sagittarius (shares
+  modality/polarity), not to its unrelated zodiac neighbour Taurus. The profile's
+  peakedness replaces a separate confidence scalar (a landslide punishes misses, a
+  coin-flip shrugs). Mercury/Venus reward outside their ±1/±2 reach of the Sun is zeroed
+  (the real sky never puts them there). Target degree still comes from the margin.
 
 ## Layer 3: Ephemeris Search
 
@@ -38,7 +45,7 @@ Three layers, in data-flow order:
 
 **Weighting hierarchy (governs both matching and degree scoring):**
 1. Big three (Sun, Moon, ASC) — exact by construction (Sun defines the date window, only Moon-match days are considered, ASC comes from free choice of time). Hard.
-2. Personal (Mercury, Venus, Mars) — **medium soft weight**: scored, not filtered. Mismatch penalty per planet = medium tier weight × that planet's quiz confidence weight, so a landslide result is expensive to bend while a coin-flip result bends cheaply.
+2. Personal (Mercury, Venus, Mars) — **medium soft weight**: scored, not filtered. Reward per planet = medium tier weight × the quiz's fit for the sign it lands on (from the reward profile), so the ideal sign pays in full, a similar sign pays partially, and an unrelated one barely at all. A landslide profile is expensive to bend; a coin-flip bends cheaply.
 3. Social (Jupiter, Saturn) — low soft weight.
 
 Exchange-rate intent: a high-confidence personal planet match should outweigh both social planets combined; a low-confidence one may lose to them or to substantially better degree fit. Total objective = sign-match score + degree-fit score, both weighted by the hierarchy.
@@ -85,7 +92,13 @@ Add 4 questions; feed results into Stage 1 year ranking as low-weight preference
 - Hard constraints, not soft — a real date/time requires a physically real chart.
 - Real-ephemeris search over fabricated charts — verifiability is the product.
 - Jupiter/Saturn/Uranus derived from the date, not quizzed (M5 may add light Jupiter/Saturn quizzing as tie-breakers only).
-- Weighting: big three hard (by construction) > personal medium (soft, confidence-scaled — a mismatch is permitted, priced by quiz margin) > social low (soft).
+- Weighting: big three hard (by construction) > personal medium (soft) > social low (soft).
+- Soft planets scored by a **reward profile**, not all-or-nothing (revised 2026-07-04):
+  Mercury/Venus/Mars are rewarded by the quiz's fit for whatever sign they land on, so
+  an unreachable ideal sign degrades gracefully to the most astrologically-similar
+  reachable one (element/modality/polarity), rather than to an arbitrary miss. The
+  profile's shape subsumes the old per-planet confidence scalar. Big three stay hard
+  single-sign.
 - Multiple cities as a longitude degree-of-freedom; UTC internally.
 - No "best pick" / match-quality framing in the results.
 

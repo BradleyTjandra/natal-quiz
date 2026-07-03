@@ -22,9 +22,17 @@ export type Placement =
   | "saturn";
 
 export interface PlanetTarget {
-  sign: number; // 0..11 target sign index
+  sign: number; // 0..11 primary/best sign index
   degree: number; // 0..30 target degree within the sign
   confidence: number; // 0..1, how decisive the quiz answer was
+  // Soft placements (Mercury/Venus/Mars) may instead carry a per-sign reward
+  // profile — how well *each* sign fits the quiz answers, normalised so the best
+  // sign ≈ 1. The search then rewards the planet by where it actually lands
+  // (a bent Gemini → Sagittarius still scores partially, Taurus barely at all),
+  // and the profile's peakedness replaces `confidence` (a landslide punishes
+  // misses, a coin-flip shrugs). When absent, scoring falls back to all-or-
+  // nothing on `sign` scaled by `confidence` (the big three, and older callers).
+  reward?: number[]; // length 12
 }
 
 // A target need not name every placement — Jupiter/Saturn are absent until M5.
@@ -80,10 +88,38 @@ function degreeCloseness(actualDegree: number, targetDegree: number): number {
   return Math.max(0, 1 - Math.abs(actualDegree - targetDegree) / 30);
 }
 
-// The most a placement can contribute: perfect sign match and exact degree.
+// How strongly a placement wants its best case: `confidence` for a one-hot
+// target, or the peak of the reward profile for a soft one.
+function peakWeight(target: PlanetTarget): number {
+  return target.reward ? Math.max(...target.reward) : target.confidence;
+}
+
+// The most a placement can contribute: perfect sign match (or best reward sign)
+// and exact degree.
 export function fullReward(placement: Placement, target: PlanetTarget): number {
   const tier = TIER[placement];
-  return (SIGN_WEIGHT[tier] + DEGREE_WEIGHT[tier]) * target.confidence;
+  return (SIGN_WEIGHT[tier] + DEGREE_WEIGHT[tier]) * peakWeight(target);
+}
+
+// Upper bound on a placement's reward when the planet can only reach
+// `reachableSigns` during the search window (used by Stage 1 for Mars): the best
+// reward among reachable signs, or full reward iff a one-hot target's sign is
+// reachable. Never understates the achievable reward, so branch-and-bound stays
+// valid.
+export function reachableReward(
+  placement: Placement,
+  target: PlanetTarget,
+  reachableSigns: Set<number>,
+): number {
+  const tier = TIER[placement];
+  if (target.reward) {
+    let maxR = 0;
+    for (const s of reachableSigns) {
+      if (target.reward[s] > maxR) maxR = target.reward[s];
+    }
+    return (SIGN_WEIGHT[tier] + DEGREE_WEIGHT[tier]) * maxR;
+  }
+  return reachableSigns.has(target.sign) ? fullReward(placement, target) : 0;
 }
 
 // The score a perfect chart (every placement exact) would earn for this target.
@@ -102,11 +138,18 @@ export function scoreChart(target: Target, chart: Chart): number {
     const t = target[key]!;
     const tier = TIER[key];
     const longitude = longitudeFor(key, chart);
-    if (signIndexOf(longitude) !== t.sign) continue; // mismatch: no reward
-    total += SIGN_WEIGHT[tier] * t.confidence;
+    const landedSign = signIndexOf(longitude);
+
+    // How much this placement rewards the sign the planet actually landed on:
+    // the reward profile if present (soft, graded by fit), else all-or-nothing
+    // on the target sign scaled by confidence (hard / one-hot).
+    const weight = t.reward ? t.reward[landedSign] : landedSign === t.sign ? t.confidence : 0;
+    if (weight <= 0) continue;
+
+    total += SIGN_WEIGHT[tier] * weight;
     total +=
       DEGREE_WEIGHT[tier] *
-      t.confidence *
+      weight *
       degreeCloseness(degreeInSign(longitude), t.degree);
   }
   return total;

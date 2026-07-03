@@ -51,63 +51,85 @@ function decisiveness(v: SignScores, sign: number): number {
   return Math.max(0, Math.min(1, (v[sign] - runnerUp) / range));
 }
 
-// Turn a chosen sign into a full target. Decisiveness sets both knobs (SPEC):
-//   landslide (→1): non-negotiable in the search, planet sits solidly placed (~7°)
-//   coin-flip (→0): flexible, planet sits near a cusp (~27°, "could be either sign")
-// The two constants are the main tuning dials for how the quiz "feels".
-function placementFrom(v: SignScores, sign: number): PlanetTarget {
-  const d = decisiveness(v, sign);
-  return {
-    sign,
-    confidence: d,
-    degree: 27 - d * 20, // d=1 → 7°, d=0 → 27°
-  };
+// The target degree from decisiveness (SPEC): landslide (→1) sits the planet
+// solidly placed (~7°); coin-flip (→0) puts it near a cusp (~27°). The two
+// constants are the main dials for how "solid vs cuspy" the quiz feels.
+function degreeFrom(d: number): number {
+  return 27 - d * 20; // d=1 → 7°, d=0 → 27°
 }
 
-function argmax(v: SignScores): number {
+// A hard placement (the big three): guaranteed to match by construction, so it
+// carries a single sign and a confidence that only scales its degree reward.
+function hardPlacement(v: SignScores, sign: number): PlanetTarget {
+  const d = decisiveness(v, sign);
+  return { sign, confidence: d, degree: degreeFrom(d) };
+}
+
+// Normalise a vector to 0..1 (best sign → 1) so the search can reward a planet by
+// how well the sign it lands on fits. A flat vector (no signal) becomes all 1s —
+// the planet is happy anywhere, so it never constrains the search.
+function normalize(v: SignScores): number[] {
+  const max = Math.max(...v);
+  const min = Math.min(...v);
+  const range = max - min;
+  if (range <= 0) return v.map(() => 1);
+  return v.map((x) => (x - min) / range);
+}
+
+function argmax(v: number[]): number {
   let best = 0;
-  for (let i = 1; i < 12; i++) if (v[i] > v[best]) best = i;
+  for (let i = 1; i < v.length; i++) if (v[i] > v[best]) best = i;
   return best;
 }
 
-// Best sign for a planet restricted to those within `maxDist` signs of the Sun.
+// A soft placement (Mercury/Venus/Mars): carries the full reward profile so the
+// search scores it by fit at the landed sign. For Mercury/Venus, signs beyond
+// the ±maxDist reach of the Sun are zeroed — the real sky never puts them there,
+// so keeping their reward would only inflate the theoretical maximum.
+function softPlacement(v: SignScores, sunSign?: number, maxDist = 0): PlanetTarget {
+  let reward = normalize(v);
+  if (sunSign != null) {
+    reward = reward.map((r, s) => (signDistance(s, sunSign) <= maxDist ? r : 0));
+  }
+  const sign = argmax(reward); // best *reachable* sign
+  const d = decisiveness(v, sign);
+  return { sign, confidence: d, degree: degreeFrom(d), reward };
+}
+
+// Best reachable raw score for a planet within `maxDist` signs of the Sun — used
+// only to weigh the joint Sun choice below.
 function bestWithin(v: SignScores, sunSign: number, maxDist: number): number {
-  let best = -1;
+  let best = -Infinity;
   for (let s = 0; s < 12; s++) {
-    if (signDistance(s, sunSign) > maxDist) continue;
-    if (best === -1 || v[s] > v[best]) best = s;
+    if (signDistance(s, sunSign) <= maxDist && v[s] > best) best = v[s];
   }
   return best;
 }
 
 export function solve(vectors: ScoreVectors): Target {
-  // Sun/Mercury/Venus are coupled by the constraints, so we can't just take each
-  // one's own winner: a marginal Sun sign may be worth flipping to if it unlocks
-  // a much stronger Mercury or Venus. For each candidate Sun, Mercury and Venus
-  // independently take their best *allowed* sign; keep the Sun with the highest
-  // combined total. Only 12 Suns to check.
+  // Sun/Mercury/Venus are coupled by the constraints, so the Sun isn't simply its
+  // own winner: a marginal Sun sign may be worth flipping to if it unlocks a much
+  // stronger Mercury or Venus. Pick the Sun maximising the trio's combined raw
+  // score, with Mercury/Venus each taking their best allowed sign. Only 12 Suns.
   let bestSun = 0;
-  let bestMerc = 0;
-  let bestVenus = 0;
   let bestTotal = -Infinity;
   for (let sun = 0; sun < 12; sun++) {
-    const merc = bestWithin(vectors.mercury, sun, 1);
-    const venus = bestWithin(vectors.venus, sun, 2);
-    const total = vectors.sun[sun] + vectors.mercury[merc] + vectors.venus[venus];
+    const total =
+      vectors.sun[sun] +
+      bestWithin(vectors.mercury, sun, 1) +
+      bestWithin(vectors.venus, sun, 2);
     if (total > bestTotal) {
       bestTotal = total;
       bestSun = sun;
-      bestMerc = merc;
-      bestVenus = venus;
     }
   }
 
   return {
-    sun: placementFrom(vectors.sun, bestSun),
-    moon: placementFrom(vectors.moon, argmax(vectors.moon)),
-    ascendant: placementFrom(vectors.ascendant, argmax(vectors.ascendant)),
-    mercury: placementFrom(vectors.mercury, bestMerc),
-    venus: placementFrom(vectors.venus, bestVenus),
-    mars: placementFrom(vectors.mars, argmax(vectors.mars)),
+    sun: hardPlacement(vectors.sun, bestSun),
+    moon: hardPlacement(vectors.moon, argmax(vectors.moon)),
+    ascendant: hardPlacement(vectors.ascendant, argmax(vectors.ascendant)),
+    mercury: softPlacement(vectors.mercury, bestSun, 1),
+    venus: softPlacement(vectors.venus, bestSun, 2),
+    mars: softPlacement(vectors.mars),
   };
 }

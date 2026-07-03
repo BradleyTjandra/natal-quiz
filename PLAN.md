@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 65 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 68 passing (`npm test`)
 
 ## Status
 
@@ -131,14 +131,25 @@ a `Target` for M1's search:
 - Sun/Mercury/Venus solved jointly (brute force over 12 Suns; Mercury/Venus take
   their best sign within ±1/±2 of each candidate Sun) so a marginal Sun flips
   when it unlocks a stronger Mercury/Venus. Moon/ASC/Mars picked independently.
-- Each placement's **confidence** and **target degree** come from one
-  scale-invariant `decisiveness` (0..1) of the chosen sign: landslide → high
-  confidence + solidly placed (~7°); coin-flip or constraint-forced → low
-  confidence + cuspy (~27°). The two mapping constants in `placementFrom` are the
-  main dials for how decisive/flexible the whole quiz feels — tune once M3 exists.
-- Tested (`solve.test.ts`): independent winners, landslide/coin-flip mapping,
-  Mercury/Venus pulled off their raw winners by the constraint, a marginal-Sun
-  flip, and a solve→search integration proving the Target is realisable.
+- Big three: single sign + a `decisiveness`-derived confidence (scales degree
+  reward) + target degree (landslide ~7°, coin-flip ~27°).
+- **Soft planets (Mercury/Venus/Mars) carry a full 12-sign reward profile**
+  (revised 2026-07-04, at Brad's suggestion): the search rewards them by the
+  quiz's fit for the sign they *land on*, so an unreachable ideal sign degrades to
+  the most astrologically-similar reachable one (Gemini→Sagittarius, not→Taurus)
+  rather than an arbitrary miss. The profile shape subsumes the old confidence
+  scalar. Mercury/Venus reward is zeroed outside their ±1/±2 reach of the Sun.
+- This changed the scoring objective: `scoring.ts` (`reward?` field, graded
+  `scoreChart`, `reachableReward` for a valid Mars bound), `stage1.ts` (Mars
+  bound), `stage3.ts`. All backward-compatible — one-hot targets (no `reward`)
+  keep the old all-or-nothing behaviour, so the M1 tests are untouched. SPEC's
+  Layer 2/3 and Key Decisions Log updated to match.
+- Tested (`solve.test.ts` + `scoring.test.ts`): independent winners, landslide/
+  coin-flip mapping, Mercury/Venus pulled within the constraint, a marginal-Sun
+  flip, the Gemini→Sagittarius-over-Taurus fallback, and a solve→search
+  integration proving the Target is realisable.
+- The two degree-mapping constants in `degreeFrom` remain the main dials for how
+  the quiz "feels"; tune once M3 produces real vector shapes.
 
 ## Next up
 

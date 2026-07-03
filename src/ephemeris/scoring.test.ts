@@ -90,6 +90,34 @@ describe("scoreChart", () => {
   });
 });
 
+describe("soft reward scoring — graceful sign fallback", () => {
+  // A "Gemini-ish" reward profile (Air + Mutable). Its zodiac neighbour Taurus
+  // shares neither axis; Sagittarius (opposite) shares modality and polarity, so
+  // it's a much better fallback when Gemini itself is out of reach.
+  const reward = new Array(12).fill(0);
+  reward[2] = 1.0; // Gemini — the ideal
+  reward[6] = 0.7; // Libra — fellow Air
+  reward[10] = 0.7; // Aquarius — fellow Air
+  reward[8] = 0.55; // Sagittarius — fellow Mutable, opposite
+  reward[1] = 0.1; // Taurus — adjacent but unrelated
+  const marsTarget: Target = { mars: { sign: 2, degree: 15, confidence: 1, reward } };
+  const at = (sign: number) =>
+    scoreChart(marsTarget, chartWith({ mars: { sign, degree: 15 } }));
+
+  it("rewards the ideal sign the most", () => {
+    expect(at(2)).toBeGreaterThan(at(6));
+    expect(at(2)).toBeGreaterThan(at(8));
+  });
+
+  it("prefers a similar fallback (Sagittarius) over an adjacent-but-unrelated one (Taurus)", () => {
+    expect(at(8)).toBeGreaterThan(at(1));
+  });
+
+  it("takes its maximum from the reward peak, not a confidence scalar", () => {
+    expect(maxScore(marsTarget)).toBeCloseTo(13); // (SIGN 10 + DEGREE 3) * peak 1
+  });
+});
+
 describe("exchange rate between tiers", () => {
   it("values a high-confidence personal match above both social planets", () => {
     const personal: Target = { mars: { sign: 0, degree: 0, confidence: 1 } };
