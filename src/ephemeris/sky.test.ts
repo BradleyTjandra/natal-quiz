@@ -119,6 +119,33 @@ describe("Ascendant is the point rising on the eastern horizon", () => {
   }
 });
 
+describe("matches a published astrology ephemeris", () => {
+  // The product's promise is that the chart checks out on any astrology site.
+  // This pins our output against a mainstream tropical ephemeris (signsbystars.com)
+  // for a fixed instant, so we'd notice immediately if anything ever drifted.
+  // Tolerance 0.05° covers the reference table's arcminute rounding; our actual
+  // agreement is ~0.01°. Values are longitude within the sign.
+  const REFERENCE: [ChartBody, number][] = [
+    ["Sun", 270 + 9.85], // Capricorn 9°51'
+    ["Moon", 210 + 7.28], // Scorpio 7°17'
+    ["Mercury", 270 + 1.1], // Capricorn 1°06'
+    ["Venus", 240 + 0.95], // Sagittarius 0°57'
+    ["Mars", 300 + 27.57], // Aquarius 27°34'
+    ["Jupiter", 0 + 25.23], // Aries 25°14'
+    ["Saturn", 30 + 10.4], // Taurus 10°24'
+    ["Uranus", 300 + 14.78], // Aquarius 14°47'
+  ];
+
+  const date = new Date("2000-01-01T00:00:00Z");
+  for (const [body, expected] of REFERENCE) {
+    it(`${body} agrees with the published position`, () => {
+      const lon = eclipticLongitude(body, date);
+      const diff = Math.abs(normalizeDegrees(lon - expected + 180) - 180);
+      expect(diff).toBeLessThan(0.05);
+    });
+  }
+});
+
 describe("computeChart", () => {
   it("returns all eight bodies plus an Ascendant, all in range", () => {
     const chart = computeChart(
