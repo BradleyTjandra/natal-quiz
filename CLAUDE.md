@@ -54,3 +54,37 @@ smart and capable, just not yet fluent in this particular domain.
   `brad.tj/natal-quiz` (inherits the custom domain from Brad's user-page repo
   automatically — confirmed via GitHub's docs). `vite.config.ts`'s `base` setting
   depends on this; don't change one without the other.
+
+## Lessons learned (working notes — update as we go)
+
+Practical things that have bitten us or worked well. Read before touching the
+ephemeris code or adding tooling.
+
+- **Three toolchains, one codebase — they resolve imports differently.** The same
+  code runs in the browser (Vite), tests (Vitest), and Node scripts (the ingress
+  generator). "Passes the tests" does NOT mean "runs everywhere." Always actually
+  run new code in the toolchain it will run in. Concretely:
+  - Import `astronomy-engine` with **named imports** (`import { GeoVector } from
+    …`), not `import * as Astronomy` — the namespace form came through empty under
+    Node/tsx.
+  - Import JSON with the attribute: `import x from "./f.json" with { type:
+    "json" }`. Works in all three; plain Node errors without it.
+  - Run TS scripts with `node --experimental-strip-types
+    --disable-warning=ExperimentalWarning script.ts` (see `npm run gen:ingress`).
+    No extra dependency needed.
+- **Verify against independent sources, never hand-copied or remembered numbers.**
+  What's worked: cross-check our output against the library's *own* separate
+  calculations (equinox/solstice instants, horizon math) and against a published
+  ephemeris. This is also the product's core promise, so the tests double as proof
+  the conceit holds. Don't assert against a number you typed from memory.
+- **Tests catch wrong *assumptions*, not just wrong code.** A failing test has
+  twice been the test's expectation being wrong (e.g. a retrograde sign-ingress
+  lands at the *top* of a sign, not the bottom), while the code was right. When a
+  test fails, check which side is actually wrong before "fixing" the code.
+- **Run `tsc` AND the tests.** Vitest strips types without checking them, so it
+  silently passes type errors (missing imports, bad types). `npx tsc --noEmit`
+  catches those. The `build` script runs both; do the same when iterating.
+- **Prefer a valid-but-loose bound/estimate first, tighten later.** The Stage 1
+  upper bound assumes best-case for everything except Mars — correct and simple
+  now, with the tightening (Sun-window reuse) logged in PLAN.md rather than done
+  prematurely.
