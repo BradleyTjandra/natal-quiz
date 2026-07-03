@@ -12,7 +12,7 @@ instead if the design itself changes.
 | Milestone | What | Status |
 |---|---|---|
 | M0 | Project setup (this session) | ✅ Done |
-| M1 | Ephemeris search module (`src/ephemeris/`) | ⬜ Not started |
+| M1 | Ephemeris search module (`src/ephemeris/`) | 🟡 In progress |
 | M2 | Solver (`src/solver/`) | ⬜ Not started |
 | M3 | Quiz content & scoring (`src/quiz/`) | ⬜ Not started |
 | M4 | UI (quiz flow, results screen) | ⬜ Not started |
@@ -35,8 +35,37 @@ instead if the design itself changes.
 - No linter or test framework yet. SPEC.md's M1 test plan ("generate 500+ synthetic
   targets...") needs a test runner — plan is to add Vitest when M1 starts, not before.
 
+## M1 — Ephemeris search (in progress)
+
+Building per SPEC.md's own ordering ("riskiest first"). Done so far:
+
+- **The "read the real sky" foundation** (`src/ephemeris/`) — the layer the whole
+  search sits on top of, verified before building anything else on it:
+  - `signs.ts` — ecliptic-longitude → zodiac sign + degree arithmetic.
+  - `sky.ts` — geocentric ecliptic longitude "of date" for Sun, Moon, and
+    Mercury–Uranus, plus an analytic Ascendant (from sidereal time + obliquity,
+    no scanning, as SPEC.md specifies). `computeChart()` reads a full chart off a
+    real moment + place.
+  - `sky.test.ts` — proves correctness against astronomy-engine's *own*
+    independent calculations rather than hand-copied numbers: Sun anchors exactly
+    to the library's equinox/solstice instants; the planet route is validated by
+    running the Sun through it and matching `SunPosition`; the Ascendant is
+    confirmed to land on the eastern horizon (altitude ≈ 0, rising) across four
+    cities in both hemispheres.
+- Test runner: Vitest (`npm test`).
+
+Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
+
+- Confirm the usable year range (how far back astronomy-engine stays accurate).
+- Stage 0: ingress-table generator (Node script → static JSON) for Jupiter,
+  Saturn, Mars sign-change dates.
+- Stages 1–4: the hierarchical best-first search (years → days → planets →
+  degrees/city/minute).
+- Weighting hierarchy + the relaxation path (bend Mars, then Venus, then Mercury;
+  never Sun/Moon/ASC).
+- The M1 acceptance test: 500+ synthetic targets, assert the returned moment
+  reproduces all five personal planets + ASC; log match rate and runtime.
+
 ## Next up
 
-M1 (ephemeris search) is next, per SPEC.md's own ordering ("riskiest first" — it's
-the part that validates the whole conceit: that generated charts are real and
-verifiable). Not started yet.
+Continue M1: decide the year range, then build the ingress tables (Stage 0).
