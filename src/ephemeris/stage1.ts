@@ -20,16 +20,29 @@ export interface SunWindow {
   end: Date;
 }
 
+// The Sun window for a (year, sign) is a fixed fact about the sky, and the search
+// asks for the same ones repeatedly (every target re-ranks all 500 years, and
+// many targets share a Sun sign). Memoizing turns the acceptance test's ~250k
+// Sun searches into a few thousand. Safe because the function is pure — the
+// cached Date objects are only ever read, never mutated.
+const sunWindowCache = new Map<number, SunWindow>();
+
 // The stretch of a given year when the Sun occupies `sunSign`. Anchored to the
 // occurrence that *starts* in this year (so late signs straddling into January
 // belong to the year they began in).
 export function sunWindow(year: number, sunSign: number): SunWindow {
+  const key = year * 12 + sunSign;
+  const cached = sunWindowCache.get(key);
+  if (cached) return cached;
+
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const enter = SearchSunLongitude(sunSign * 30, yearStart, 400);
   if (!enter) throw new Error(`no Sun entry into sign ${sunSign} in ${year}`);
   const exit = SearchSunLongitude(((sunSign + 1) % 12) * 30, enter.date, 40);
   if (!exit) throw new Error(`no Sun exit from sign ${sunSign} in ${year}`);
-  return { start: enter.date, end: exit.date };
+  const window = { start: enter.date, end: exit.date };
+  sunWindowCache.set(key, window);
+  return window;
 }
 
 export function yearUpperBound(target: Target, year: number): number {

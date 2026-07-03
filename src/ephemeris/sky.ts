@@ -89,14 +89,18 @@ export interface Chart {
   ascendant: number;
 }
 
-// Read a full chart off a real moment and place.
+// Read a chart off a real moment and place. By default every charted body is
+// computed; pass `bodies` to compute only some — the search's hot loop scores
+// only the placements a target names, so computing the slow social/outer bodies
+// there is wasted work (they're filled in once for the final winning chart).
 export function computeChart(
   date: Date,
   latitude: number,
   longitudeEast: number,
+  bodies: readonly ChartBody[] = CHART_BODIES,
 ): Chart {
   const positions = {} as Record<ChartBody, number>;
-  for (const body of CHART_BODIES) {
+  for (const body of bodies) {
     positions[body] = eclipticLongitude(body, date);
   }
   return { positions, ascendant: ascendant(date, latitude, longitudeEast) };

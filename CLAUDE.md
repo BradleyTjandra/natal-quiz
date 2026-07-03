@@ -87,4 +87,21 @@ ephemeris code or adding tooling.
 - **Prefer a valid-but-loose bound/estimate first, tighten later.** The Stage 1
   upper bound assumes best-case for everything except Mars — correct and simple
   now, with the tightening (Sun-window reuse) logged in PLAN.md rather than done
-  prematurely.
+  prematurely. Corollary bite: a *loose* branch-and-bound bound is still correct
+  but *slow* — every Mars-reachable year shares the same `maxScore` ceiling, so
+  B&B can't rank among them and scans many. Loose-first is right; just know the
+  cost shows up as runtime, not wrong answers.
+- **The Ascendant is monotonic in time and analytically invertible — don't scan
+  for it.** It advances one direction through all 360° per sidereal day, so any
+  target ASC longitude is hit exactly once per sidereal day, and you can solve the
+  ascendant formula backwards for the required sidereal time, then convert that to
+  UTC linearly (sidereal time is ~linear in UT). `stage4.ts` does this; a
+  bisection scan was ~10× slower for no accuracy gain. SPEC already called for
+  "analytic via sidereal time — no scanning."
+- **The Moon's longitude is geocentric here — city-independent.** The city tunes
+  the Moon degree *only* indirectly: each city needs a different UTC instant to
+  bring the same Ascendant onto its horizon, and that time shift moves the Moon.
+  Don't look for a per-city Moon term; there isn't one.
+- **Vitest hides `console.log` under the default reporter.** In `vitest run` a
+  test's `console.log` (e.g. the acceptance summary) doesn't print until you pass
+  `--reporter=verbose`. Don't assume the log didn't fire — check with verbose.

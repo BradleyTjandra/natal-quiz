@@ -5,14 +5,14 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-03 · **Tests:** 39 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 60 passing (`npm test`)
 
 ## Status
 
 | Milestone | What | Status |
 |---|---|---|
 | M0 | Project setup (this session) | ✅ Done |
-| M1 | Ephemeris search module (`src/ephemeris/`) | 🟡 In progress |
+| M1 | Ephemeris search module (`src/ephemeris/`) | ✅ Done |
 | M2 | Solver (`src/solver/`) | ⬜ Not started |
 | M3 | Quiz content & scoring (`src/quiz/`) | ⬜ Not started |
 | M4 | UI (quiz flow, results screen) | ⬜ Not started |
@@ -82,21 +82,49 @@ Building per SPEC.md's own ordering ("riskiest first"). Done so far:
   reaches its target sign during the Sun window). Ingress JSON imported with a
   `with { type: "json" }` attribute so it loads under Vite, Vitest, and Node.
 
-Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
+- **Stages 2–4 + orchestrator done.** The search now returns a real birth
+  moment (date, UTC time, city) whose sky best matches a target:
+  - `cities.ts` — 24 curated cities spanning all longitudes (the Moon-degree
+    degree-of-freedom); lat/lon used by the search, IANA tz stored for M4 display.
+  - `stage2.ts` — `moonWindows`: narrows the Sun window to the ~2-3 day
+    Moon-match interval(s), clipped to the Sun window so Sun sign stays exact.
+  - `stage3.ts` — `personalSignScore`: cheap personal/social sign score, used to
+    order intervals (never to discard).
+  - `stage4.ts` — lands the Ascendant on its target *analytically* (closed-form
+    inverse of the ascendant formula → required sidereal time → UTC; no scanning),
+    then reads the real chart per city and keeps the best. This is where the ASC
+    sign+degree are hit exactly and the Moon degree is tuned by city choice.
+  - `search.ts` — walks `rankYears` best-bound-first, keeps the global best real
+    moment, stops on the branch-and-bound condition (best ≥ next year's bound) or
+    early via `acceptRatio` / `maxYears` (the product fast path).
+- **M1 acceptance test passes** (`search.test.ts`): 500+ synthetic targets, Sun/
+  Moon/ASC exact on every one; branch-and-bound proven equal to exhaustive search
+  on a small range. `npm test` runs a 150-target sample; `ACCEPT_N=500` runs the
+  full quota. `npm run try:search` prints one chart to eyeball on an astrology site.
+- **Sun-window reuse optimization done** (differently than first planned): instead
+  of the approximate "reuse across years" trick, `sunWindow` is now memoized by
+  (year, sign) — exact, and it collapses the acceptance test's ~250k Sun searches
+  to a few thousand.
 
-- Spot-check displayed-degree accuracy at old dates before widening the year range.
-- Stages 2–4: Moon-match days in the Sun window → score Mercury/Venus/Mars
-  (nothing discarded) → degrees/city/minute for ASC + Moon degree fit.
-- The branch-and-bound loop: walk `rankYears` best-first, keep the best real
-  candidate, stop once it beats every remaining year's bound. Optimization:
-  `rankYears` currently does 2 Sun-position searches/year (~0.6 s for all 500);
-  the Sun window barely moves year to year, so compute it once and reuse.
-- The M1 acceptance test: 500+ synthetic targets; assert Sun/Moon/ASC always
-  exact; log personal-planet match rate (high when quiz confidence is high) and
-  runtime; verify branch-and-bound optimality against exhaustive search on a
-  small range.
+### Deferred (M1 works without these; revisit for the phone-speed target in M4)
+
+- **Displayed-degree accuracy spot-check at old dates** before widening the year
+  range past 1600 toward ~1000 AD (`config.ts` one-liner + regenerate ingress).
+- **Speed** — search is ~0.3–0.6 s/target in Node (SPEC wants ~10–100 ms typical;
+  the app runs in a Web Worker, different profile). Two known wins, both left out
+  now for clarity/correctness:
+  - *Moon-first inner loop:* Stage 4 recomputes Mercury/Venus/Mars at all 24
+    cities though they barely move across a 2-3 day interval. When their signs are
+    constant over the interval, pick the city by Moon degree first and full-score
+    only the winner. Keeps big-three exact; B&B stays valid (bound still ≥ any
+    real chart).
+  - *Degree-aware tighter Stage-1 bound:* the bound assumes perfect degrees, so
+    every Mars-reachable year shares the `maxScore` ceiling and B&B can't prune
+    among them (why the tail scans many years). A bound that accounts for the
+    unavoidable Sun/degree deficit would prune far more.
 
 ## Next up
 
-Continue M1: Stages 2–4 (day/degree evaluation) and the branch-and-bound loop
-that ties Stage 1's ranking into a full search returning a real birth moment.
+**M2 — Solver** (`src/solver/`): score vectors → constrained sign assignment +
+confidence weights + target degrees, feeding the `Target` that M1's `search`
+already consumes. Then M3 (quiz content) and M4 (UI + Web Worker).
