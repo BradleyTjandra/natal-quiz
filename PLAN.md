@@ -71,14 +71,21 @@ Building per SPEC.md's own ordering ("riskiest first"). Done so far:
 Still to do for M1 (see SPEC.md "Layer 3" and milestone M1):
 
 - Spot-check displayed-degree accuracy at old dates before widening the year range.
-- Stages 1–4: the hierarchical best-first search (years → days → planets →
-  degrees/city/minute).
-- Weighting hierarchy + the relaxation path (bend Mars, then Venus, then Mercury;
-  never Sun/Moon/ASC).
-- The M1 acceptance test: 500+ synthetic targets, assert the returned moment
-  reproduces all five personal planets + ASC; log match rate and runtime.
+- The scoring objective: big three exact by construction; personal planets
+  (Mercury/Venus/Mars) scored as **soft, confidence-weighted** penalties (not
+  filtered); social planets low soft weight; plus degree-fit score.
+- Stage 1 (years, **branch-and-bound**): per-year upper-bound score from the
+  ingress tables (Jup/Sat actual + Mars best-case + max possible personal/degree);
+  walk years best-bound-first; stop once the best real candidate beats every
+  remaining year's ceiling (provably optimal — no relaxation path).
+- Stages 2–4: Moon-match days in the Sun window → score Mercury/Venus/Mars
+  (nothing discarded) → degrees/city/minute for ASC + Moon degree fit.
+- The M1 acceptance test: 500+ synthetic targets; assert Sun/Moon/ASC always
+  exact; log personal-planet match rate (high when quiz confidence is high) and
+  runtime; verify branch-and-bound optimality against exhaustive search on a
+  small range.
 
 ## Next up
 
-Continue M1: Stage 1 of the search — rank candidate years using the ingress
-tables (Jupiter/Saturn fit; skip years where Mars can't reach the target sign).
+Continue M1: build the scoring objective + Stage 1 (branch-and-bound year ranking
+using the ingress-table upper bounds).

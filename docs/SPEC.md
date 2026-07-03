@@ -37,18 +37,20 @@ Three layers, in data-flow order:
 **Reference frame:** all computation in UTC internally; convert to local civil time only for display. Curated list of ~20–30 well-known cities spanning all longitudes with unambiguous timezone histories (e.g. Auckland, Tokyo, Kolkata, Moscow, Cairo, London, Rio de Janeiro, Mexico City, Honolulu). Longitude choice gives ~±6° of control over Moon degree; that is its purpose.
 
 **Weighting hierarchy (governs both matching and degree scoring):**
-1. Big three (Sun, Moon, ASC) — exact by construction, never bend.
-2. Personal (Mercury, Venus, Mars) — must match exactly; only bend (Mars first) if no match exists in the entire year range.
-3. Social (Jupiter, Saturn) — tie-breakers only, never veto.
+1. Big three (Sun, Moon, ASC) — exact by construction (Sun defines the date window, only Moon-match days are considered, ASC comes from free choice of time). Hard.
+2. Personal (Mercury, Venus, Mars) — **medium soft weight**: scored, not filtered. Mismatch penalty per planet = medium tier weight × that planet's quiz confidence weight, so a landslide result is expensive to bend while a coin-flip result bends cheaply.
+3. Social (Jupiter, Saturn) — low soft weight.
+
+Exchange-rate intent: a high-confidence personal planet match should outweigh both social planets combined; a low-confidence one may lose to them or to substantially better degree fit. Total objective = sign-match score + degree-fit score, both weighted by the hierarchy.
 
 **Search algorithm (hierarchical filtering, best-first):**
 
-1. **Stage 0 (precompute, user-independent):** ingress tables (sign-change dates) for Jupiter, Saturn, and Mars across the full year range. Ship as static JSON, a few KB. Turns Stage 1 into lookups and lets whole years be skipped when Mars can't match.
-2. **Stage 1 (years):** rank years by Jupiter/Saturn fit via ingress tables. Skip years where Mars is never in the target sign during the Sun window (Mars ingress table). Walk years best-first.
+1. **Stage 0 (precompute, user-independent):** ingress tables (sign-change dates) for Jupiter, Saturn, and Mars across the full year range. Ship as static JSON, a few KB. These give each year's Jupiter/Saturn/Mars contribution (or its maximum) cheaply without ephemeris calls.
+2. **Stage 1 (years, branch-and-bound):** from the ingress tables compute each year's **upper bound** — Jupiter/Saturn actual score plus Mars's best-case score plus maximum possible Mercury/Venus/degree score. Walk years in descending upper-bound order.
 3. **Stage 2 (days):** Sun sign fixes a ~30-day window. Sample Moon every 12h across the window (cannot skip a sign at ~13°/day), bisect boundaries → ~2–3 Moon-match days.
-4. **Stage 3 (planets):** check Mars first (most selective), then Mercury, Venus at noon on each candidate day; refine near cusps only. Keep days matching all five personal planets.
-5. **Stage 4 (degrees/city/minute):** for surviving days, compute per-city the UTC window when the target ASC sign is rising (analytic via sidereal time — no scanning). Choose the minute placing ASC degree, then Moon degree, closest to targets. Score degree-fit weighted by the hierarchy above. Random selection among near-ties.
-6. **Exit:** stop at the first perfect-signs match with degree score above a good-enough threshold; otherwise continue and keep the best. If no five-planet match exists anywhere, relax Mars, then Venus, then Mercury — never Sun/Moon/ASC.
+4. **Stage 3 (planets, scored not filtered):** evaluate Mercury, Venus, Mars at noon on each candidate day (refine near cusps only) and compute the weighted sign-match score. No day is discarded for a mismatch.
+5. **Stage 4 (degrees/city/minute):** for the best-scoring days, compute per-city the UTC window when the target ASC sign is rising (analytic via sidereal time — no scanning). Choose the minute placing ASC degree, then Moon degree, closest to targets. Add degree-fit score weighted by the hierarchy. Random selection among near-ties.
+6. **Exit:** maintain the best candidate found; stop when its total score ≥ the upper bound of the next year in the queue (guaranteed optimal), or immediately if a candidate achieves the maximum possible score. In practice this terminates after a few dozen years.
 
 Expected cost: ~3–5k ephemeris evaluations typical (10–100 ms); worst case ~30–50k (sub-second). Run in a Web Worker with a "consulting the heavens" loading state.
 
@@ -61,8 +63,8 @@ Expected cost: ~3–5k ephemeris evaluations typical (10–100 ms); worst case ~
 ## Milestones (build in this order)
 
 ### M1 — Ephemeris search module (riskiest first)
-Pure TypeScript module, no UI. Ingress table generator (Node script producing static JSON), Stages 1–4, weighting, relaxation path. Verify `astronomy-engine` accuracy range and fix the year range.
-**Test:** generate 500+ synthetic targets (random valid sign combos respecting Mercury/Venus constraints, random degrees/weights); assert the returned moment reproduces all five personal planet signs and the ASC; log match rate and runtime distribution. This test validates the entire conceit.
+Pure TypeScript module, no UI. Ingress table generator (Node script producing static JSON), Stages 1–4, confidence-weighted scoring, branch-and-bound termination. Verify `astronomy-engine` accuracy range and fix the year range.
+**Test:** generate 500+ synthetic targets (random valid sign combos respecting Mercury/Venus constraints, random degrees/weights); assert the returned moment always reproduces Sun, Moon, and ASC exactly; log the personal-planet match rate (expect high when confidence weights are high), the score distribution, and runtime. Separately verify branch-and-bound optimality on a small year range by comparing against exhaustive search. This test validates the entire conceit.
 
 ### M2 — Solver
 Score vectors → constrained sign assignment + weights + target degrees.
@@ -83,7 +85,7 @@ Add 4 questions; feed results into Stage 1 year ranking as low-weight preference
 - Hard constraints, not soft — a real date/time requires a physically real chart.
 - Real-ephemeris search over fabricated charts — verifiability is the product.
 - Jupiter/Saturn/Uranus derived from the date, not quizzed (M5 may add light Jupiter/Saturn quizzing as tie-breakers only).
-- Weighting: big three > personal > social.
+- Weighting: big three hard (by construction) > personal medium (soft, confidence-scaled — a mismatch is permitted, priced by quiz margin) > social low (soft).
 - Multiple cities as a longitude degree-of-freedom; UTC internally.
 - No "best pick" / match-quality framing in the results.
 
