@@ -1,0 +1,116 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.question-text {
+  font-size: 1.15rem;
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option-button {
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  text-align: left;
+  border: 1px solid #8884;
+  border-radius: 0.5rem;
+  background: none;
+  cursor: pointer;
+}
+
+.option-button:hover {
+  background: #8881;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #8883;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: currentColor;
+  transition: width 0.2s ease;
+}
+
+.breather {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.breather-sub {
+  opacity: 0.7;
+}
+
+.loading-screen {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 auto 1.5rem;
+  border: 3px solid #8884;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.birth-moment {
+  margin-bottom: 1.5rem;
+}
+
+.birth-moment-line {
+  margin: 0.2rem 0;
+}
+
+.placement-list,
+.house-table {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.placement-list li,
+.house-table li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #8882;
+}
+
+.verification-hint {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.error-message {
+  color: #c0392b;
+}

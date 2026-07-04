@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 93 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 103 passing (`npm test`)
 
 ## Status
 
@@ -14,8 +14,8 @@ instead if the design itself changes.
 | M0 | Project setup (this session) | ✅ Done |
 | M1 | Ephemeris search module (`src/ephemeris/`) | ✅ Done |
 | M2 | Solver (`src/solver/`) | ✅ Done |
-| M3 | Quiz content & scoring (`src/quiz/`) | 🟡 Engine + drafted bank; wording review by Brad pending |
-| M4 | UI (quiz flow, results screen) | ⬜ Not started |
+| M3 | Quiz content & scoring (`src/quiz/`) | ✅ Done — wording review complete |
+| M4 | UI (quiz flow, results screen) | ✅ Done |
 | M5 | Jupiter/Saturn quiz questions (optional) | ⬜ Not started |
 
 ## M0 — Setup (done 2026-07-03)
@@ -161,7 +161,7 @@ the 12 signs → the `ScoreVectors` the solver consumes. Element outweighs modal
 land on the expected signs, dual-loading, unanswered → flat, and a
 scoreQuiz→solve integration.
 
-## M3b — Question bank (drafted 2026-07-04; wording review pending)
+## M3b — Question bank (done 2026-07-04)
 
 `src/quiz/questions.ts`: all 24 questions drafted (4 per placement, big three
 before the breather at `BREATHER_AFTER`), per the authoring rules in
@@ -182,11 +182,66 @@ confidence; tune alongside the quiz's axis weights if those change.
 → real birth moment. A random persona correctly reads as all coin-flips; an
 all-fire persona gets six Aries placements at confidence ~1.
 
+Question wording was then reviewed with Brad question-by-question against four
+agreed rules (answer depends only on you; no past-outcome questions; every
+option equally ownable; one clean axis per option) — final wording and rules
+are in `docs/QUIZ-VOICE.md`; the review's own handoff doc was deleted once done.
+
+## M4 — UI (done 2026-07-04)
+
+React app wiring the whole pipeline together, per SPEC.md's "quiz flow with
+mid-point breather, Web Worker search with loading state, results screen."
+Placement-list results format chosen over a chart wheel (Brad's call — SPEC
+left this open) to ship the working flow first; a wheel is a possible later
+visual upgrade.
+
+- **`src/ephemeris/houses.ts`** (new): whole-sign houses — nothing existed for
+  this before M4. `houseOf(bodySign, ascSign)` and `houseSigns(ascSign)`, both
+  pure functions, tested against hand-computed cases including the
+  Pisces/Aries wraparound.
+- **`src/quiz/shuffle.ts`** (new): deterministic option-order shuffling per
+  `docs/QUIZ-VOICE.md`'s "randomise option order" rule — a stable hash of
+  `questionId-optionIndex`, not real randomness, so order is stable per
+  question but not biased by the source listing order. **Caught by its own
+  test:** the first hash implementation was linear in the trailing digit, so
+  every question's 4-5 options hashed to consecutive numbers and sorted right
+  back into original order — a shuffle that never shuffled. Fixed with a
+  standard integer-hash avalanche finisher; a regression test now checks
+  real question IDs actually reorder, not just a hand-picked sample.
+- **`src/worker/`** (new): `protocol.ts` (shared request/response types),
+  `searchWorker.ts` (runs `scoreQuiz → solve → search` off the main thread —
+  SPEC requires this since search is the one slow step), `searchClient.ts`
+  (Promise-wrapped `runSearch`, one worker per search, terminates after).
+  Worker file types `self` via one narrow cast rather than adding a second
+  tsconfig — this repo's `lib` is `DOM`, and `DOM`+`WebWorker` together
+  conflict on shared globals; a two-tsconfig project-reference setup would
+  work but is more moving parts than one file needs.
+- **`src/quiz/ui/`** (new): `QuestionCard`, `ProgressBar`, `Breather`,
+  `LoadingScreen`, `QuizFlow` (owns the question pointer + answers map, shows
+  the breather right after `BREATHER_AFTER`, forward-only — no back button
+  this pass).
+- **`src/results/`** (new): `BirthMoment` (local time via
+  `Intl.DateTimeFormat` + `timeZone`, no library needed), `PlacementList`,
+  `HouseTable`, `ResultsScreen`. None of these read `candidate.score` —
+  enforces PRD's "never frame as a best match" structurally.
+- **`src/App.tsx`**: phase state machine (`quiz` → `loading` → `results` |
+  `error`).
+- **`src/index.css`** (new): one plain stylesheet, mobile-first, no styling
+  library added.
+- Verified in the browser via the Preview tool: clicked through all 24
+  questions (confirmed shuffled order differs from source order), breather
+  appears exactly at question 12, loading state shows then resolves, results
+  screen shows a plausible birth moment + all 8 bodies + Ascendant + 12
+  houses, houses table correctly starts at the Ascendant's own sign; also
+  checked at mobile viewport width. One spot-checked result: Ascendant Taurus,
+  Sun Sagittarius, Mercury Scorpio (1 sign away, satisfies the ±1 constraint),
+  Venus Scorpio (within ±2) — astrologically consistent.
+
 ## Next up
 
-- **Question-wording review in progress** — resume from
-  [docs/QUIZ-REVIEW-STATUS.md](docs/QUIZ-REVIEW-STATUS.md) (four agreed rules, a
-  pending batch of redrafts awaiting sign-off, and the remaining sweep). Delete
-  that file once the review is done.
-- **M4** — UI: quiz flow with breather, Web Worker search with loading state,
-  results screen. Revisit the solver dials once real people take the quiz.
+- **M5 (optional)** — Jupiter/Saturn quiz questions as low-weight year
+  tie-breakers.
+- Chart-wheel results view (deferred from M4).
+- Deployment: reconcile the `master`/`main` branch mismatch with
+  `deploy.yml`'s trigger, then push to GitHub Pages when Brad's ready.
+- Revisit the solver's degree-mapping dials once real people take the quiz.

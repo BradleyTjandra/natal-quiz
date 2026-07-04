@@ -1,0 +1,32 @@
+import type { Question } from "../score.ts";
+import { shuffledIndices } from "../shuffle.ts";
+
+interface Props {
+  question: Question;
+  onAnswer: (originalIndex: number) => void;
+}
+
+// Renders one question's options in shuffled order but reports the *original*
+// index to onAnswer, so scoreQuiz (which reads q.options[choice]) never has to
+// know the display order changed.
+export default function QuestionCard({ question, onAnswer }: Props) {
+  const order = shuffledIndices(question.id, question.options.length);
+
+  return (
+    <div className="question-card">
+      <p className="question-text">{question.text}</p>
+      <div className="options">
+        {order.map((originalIndex) => (
+          <button
+            key={originalIndex}
+            type="button"
+            className="option-button"
+            onClick={() => onAnswer(originalIndex)}
+          >
+            {question.options[originalIndex].text}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
