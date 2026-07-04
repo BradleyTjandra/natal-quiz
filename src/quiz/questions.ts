@@ -50,13 +50,13 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "sun-hobby",
+    id: "sun-engine",
     placement: "sun",
-    text: "A year ago you picked up a hobby you genuinely liked. Where does it stand today, honestly?",
+    text: "Forget any specific goal — which part of the process actually lights you up?",
     options: [
-      { text: "It lit the fuse for two newer pursuits; the original is fondly abandoned", loads: [{ placement: "sun", modality: "cardinal", amount: 1 }] },
-      { text: "Deeper than ever — there is gear now, and opinions, and it's a bit of who you are", loads: [{ placement: "sun", modality: "fixed", amount: 1 }] },
-      { text: "It cross-pollinated with two other interests and morphed into something unrecognisable", loads: [{ placement: "sun", modality: "mutable", amount: 1 }] },
+      { text: "The launch — the blank page, the first move, nothing into something", loads: [{ placement: "sun", modality: "cardinal", amount: 1 }] },
+      { text: "The build — going deep, getting good, the long haul to mastery", loads: [{ placement: "sun", modality: "fixed", amount: 1 }] },
+      { text: "The variety — several things at once, switching lanes, never the same way twice", loads: [{ placement: "sun", modality: "mutable", amount: 1 }] },
     ],
   },
 
@@ -128,23 +128,23 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "asc-first-day",
+    id: "asc-newcomer",
     placement: "ascendant",
-    text: "First day somewhere new — job, class, team. Nobody knows you yet. Your opening move:",
+    text: "You walk into a room where you know nobody and nothing's required of you. What does your body just do?",
     options: [
-      { text: "Introduce yourself first, to as many people as possible, before lunch", loads: [{ placement: "ascendant", modality: "cardinal", amount: 1 }] },
-      { text: "Claim a spot — a desk, a routine, a role — and let people come to you", loads: [{ placement: "ascendant", modality: "fixed", amount: 1 }] },
-      { text: "Camouflage — match the room's energy until you've mapped it", loads: [{ placement: "ascendant", modality: "mutable", amount: 1 }] },
+      { text: "Heads in — you make the first move and break your own ice", loads: [{ placement: "ascendant", modality: "cardinal", amount: 1 }] },
+      { text: "Finds an anchor — a spot, a wall, a drink — and lets people come to you", loads: [{ placement: "ascendant", modality: "fixed", amount: 1 }] },
+      { text: "Blends — reads the temperature and matches it before committing", loads: [{ placement: "ascendant", modality: "mutable", amount: 1 }] },
     ],
   },
   {
-    id: "asc-waiting-room",
+    id: "asc-pace",
     placement: "ascendant",
-    text: "Twenty minutes in a waiting room, phone dead. A stranger watching you would see someone:",
+    text: "The tempo you *think* a stranger picks up from you in the first minute:",
     options: [
-      { text: "Coiled — scanning for something to do about this, possibly negotiating with reception", loads: [{ placement: "ascendant", modality: "cardinal", amount: 1 }] },
-      { text: "Planted — settled in like the chair belongs to them, unbothered", loads: [{ placement: "ascendant", modality: "fixed", amount: 1 }] },
-      { text: "Sampling — the leaflets, the fish tank, the other patients, the ceiling", loads: [{ placement: "ascendant", modality: "mutable", amount: 1 }] },
+      { text: "Forward-leaning, like you're about to do something", loads: [{ placement: "ascendant", modality: "cardinal", amount: 1 }] },
+      { text: "Grounded — steady, unhurried, hard to rattle", loads: [{ placement: "ascendant", modality: "fixed", amount: 1 }] },
+      { text: "Quicksilver — a little different with everyone", loads: [{ placement: "ascendant", modality: "mutable", amount: 1 }] },
     ],
   },
 
@@ -152,25 +152,25 @@ export const QUESTIONS: Question[] = [
 
   // ——— Mercury: thinking, talking, learning ———
   {
-    id: "mercury-explain",
+    id: "mercury-receive",
     placement: "mercury",
-    text: "You have to explain something genuinely complicated — your job, a policy, an idea you love — to a smart friend who knows nothing about it. Your move:",
+    text: "Someone's teaching you a game you've never played. How do you actually want it explained?",
     options: [
-      { text: "Momentum — you sell the *why* with enough conviction that details can wait", loads: [{ placement: "mercury", element: "fire", amount: 1 }] },
-      { text: "Steps — first this, then this, with one concrete example per step", loads: [{ placement: "mercury", element: "earth", amount: 1 }] },
-      { text: "Analogy — “ok so imagine it's like...” and suddenly they've got the shape of it", loads: [{ placement: "mercury", element: "air", amount: 1 }] },
-      { text: "Story — you tell it through a person it happened to, watching their face to steer", loads: [{ placement: "mercury", element: "water", amount: 1 }] },
+      { text: "Goal and gist, then deal — I'll pick it up in motion", loads: [{ placement: "mercury", element: "fire", amount: 1 }] },
+      { text: "The rules in order, with one example round", loads: [{ placement: "mercury", element: "earth", amount: 1 }] },
+      { text: "The core mechanic — once I see the logic I can derive the rest", loads: [{ placement: "mercury", element: "air", amount: 1 }] },
+      { text: "Skip the rulebook — start playing with me and coach me through my first few turns; I pick it up through the back-and-forth", loads: [{ placement: "mercury", element: "water", amount: 1 }] },
     ],
   },
   {
-    id: "mercury-learn",
+    id: "mercury-stuck",
     placement: "mercury",
-    text: "You've decided to actually learn to cook. Week one looks like:",
+    text: "You're trying to learn something and it won't go in. Your most likely failure mode:",
     options: [
-      { text: "Attempting a five-ingredient flambé immediately; one pan does not survive", loads: [{ placement: "mercury", element: "fire", amount: 1 }] },
-      { text: "One trusted recipe, followed exactly, repeated until it's muscle memory", loads: [{ placement: "mercury", element: "earth", amount: 1 }] },
-      { text: "Three books and forty videos in — you can explain Maillard; you have not yet cooked", loads: [{ placement: "mercury", element: "air", amount: 1 }] },
-      { text: "In your grandmother's / friend's kitchen, absorbing it by standing next to them", loads: [{ placement: "mercury", element: "water", amount: 1 }] },
+      { text: "You skip the boring foundation, jump ahead, hit a wall you built yourself", loads: [{ placement: "mercury", element: "fire", amount: 1 }] },
+      { text: "You won't move on till it's perfect, so you barely move at all", loads: [{ placement: "mercury", element: "earth", amount: 1 }] },
+      { text: "You get it beautifully in theory and never actually do it", loads: [{ placement: "mercury", element: "air", amount: 1 }] },
+      { text: "You can't get it from a page — you need someone to show you, and no one's around", loads: [{ placement: "mercury", element: "water", amount: 1 }] },
     ],
   },
   {
@@ -201,7 +201,7 @@ export const QUESTIONS: Question[] = [
     text: "Think of the last time you were properly drawn to someone. The hook — the thing that actually did it — was:",
     options: [
       { text: "Voltage — they were bold in a way that made the room feel slightly dangerous", loads: [{ placement: "venus", element: "fire", amount: 1 }] },
-      { text: "Substance — how they showed up, on time, the way they handled things and people", loads: [{ placement: "venus", element: "earth", amount: 1 }] },
+      { text: "Capability — the unshowy way they handled things and people. Competence is hot", loads: [{ placement: "venus", element: "earth", amount: 1 }] },
       { text: "The conversation — three hours passed and you were annoyed it ended", loads: [{ placement: "venus", element: "air", amount: 1 }] },
       { text: "Being seen — they clocked something about you that most people miss", loads: [{ placement: "venus", element: "water", amount: 1 }] },
     ],
@@ -213,7 +213,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { text: "An envelope: you're both going somewhere Saturday, details on arrival", loads: [{ placement: "venus", element: "fire", amount: 1 }] },
       { text: "One beautifully made thing you'll still be using in ten years", loads: [{ placement: "venus", element: "earth", amount: 1 }] },
-      { text: "Proof they listened: the obscure thing you mentioned once, in April, found", loads: [{ placement: "venus", element: "air", amount: 1 }] },
+      { text: "Something for your head — the book that'll change how you think, or tickets to the thing you'll argue about for weeks", loads: [{ placement: "venus", element: "air", amount: 1 }] },
       { text: "Something worthless to anyone else — a photo, a ticket stub, your history", loads: [{ placement: "venus", element: "water", amount: 1 }] },
     ],
   },
@@ -230,11 +230,11 @@ export const QUESTIONS: Question[] = [
   {
     id: "venus-taste",
     placement: "venus",
-    text: "Your taste — clothes, music, rooms — over the years has been:",
+    text: "Your taste — music, food, clothes, rooms, whichever of those you actually have opinions about — over the years:",
     options: [
-      { text: "First — you were into it before it was everywhere, then bored of it", loads: [{ placement: "venus", modality: "cardinal", amount: 1 }] },
-      { text: "A signature — recognisably yours for a decade, refined not replaced", loads: [{ placement: "venus", modality: "fixed", amount: 1 }] },
-      { text: "Seasonal — your friends have stopped being surprised by the new phase", loads: [{ placement: "venus", modality: "mutable", amount: 1 }] },
+      { text: "A hunt — you actively go looking for the next thing; the finding is the fun, and once it's found you're already off again", loads: [{ placement: "venus", modality: "cardinal", amount: 1 }] },
+      { text: "Settled — you found what you like years ago and see no reason to change it", loads: [{ placement: "venus", modality: "fixed", amount: 1 }] },
+      { text: "Absorbent — it shifts on its own with whatever's around you; old phases feel like they belonged to someone else", loads: [{ placement: "venus", modality: "mutable", amount: 1 }] },
     ],
   },
 

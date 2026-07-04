@@ -21,6 +21,25 @@ is just craft guidance for the questions themselves.
 - **One consistent, candid, second-person voice.** Playful but concrete. The felt
   quality of a quiz is mostly voice consistency.
 
+## The four wording rules (agreed in the M3b review — apply to every question)
+
+1. **The answer depends only on you** — never on other people, the specific
+   situation, or luck. A "party" answer depends on the party; a "how do you
+   explain it" answer depends on the listener; a "how do you want it explained"
+   answer depends on the topic. Reframe until only *your* disposition varies.
+2. **No past-outcome questions.** What actually happened is contaminated by
+   circumstance. Ask about standing tendencies, not personal history.
+3. **Every option is real and equally ownable.** No caricature, no dull filler
+   nobody would pick, no option that's obviously the common or flattering one.
+   If one option is clearly likeliest, the question measures base rates, not
+   temperament.
+4. **One clean axis per option.** Don't smuggle in extra criteria (e.g. "guests
+   remark…") or let an option bleed into another placement's meaning.
+
+Meta-principle behind all four: concrete scenes are still good — but the
+scenario is a *fixed backdrop*; the only thing allowed to vary between options
+is the taker's own disposition.
+
 ## Rules that keep our machinery honest
 
 - **No socially-correct option.** If one option is the flattering one, everyone

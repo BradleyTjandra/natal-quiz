@@ -28,68 +28,41 @@ end-to-end with `npm run try:quiz -- random` (or a letter-per-question string).
 Meta: concrete is still good — but the scenario is a *fixed backdrop*; the only
 thing allowed to vary is the taker's own disposition.
 
-## Already applied to code (round 1 — accepted)
+## Already applied to code
 
-`moon-home` (earth option reworded), `moon-low-mood` (replaced `moon-weather`),
-`asc-dinner` (reworded), `asc-five-minutes` (replaced `asc-guess`). Note
-`sun-hobby` was a round-1 replacement but got re-flagged — see pending below.
+Round 1 (accepted): `moon-home` (earth option reworded), `moon-low-mood`
+(replaced `moon-weather`), `asc-dinner` (reworded), `asc-five-minutes` (replaced
+`asc-guess`).
 
-## PENDING — redrafts proposed, awaiting Brad's yes/edit (NOT yet in code)
+Round 2 (accepted 2026-07-04, in code, tests pass): `sun-engine` (replaced
+`sun-hobby`), `asc-newcomer` + `asc-pace` (replaced `asc-first-day` +
+`asc-waiting-room`; asc-pace stem is "the tempo you *think* a stranger picks
+up"), `mercury-receive` (game-teaching framing; water = coached-round option) +
+`mercury-stuck` (replaced `mercury-explain` + `mercury-learn`), `venus-fall`
+earth option ("Competence is hot"), `venus-gift` air option, `venus-taste`
+rebalanced (hunt / settled / absorbent, domain-neutral stem). Brad's note:
+"we can always revise later."
 
-Element opts = (F/E/A/W), modality opts = (C/Fx/M). Only changed questions shown;
-everything not listed here stays as currently written in `questions.ts`.
+## Full sweep done (2026-07-04) — findings awaiting Brad
 
-**SUN** — replace `sun-hobby` with:
-- `sun-engine` (modality) — "Forget any specific goal — which part of the process
-  actually lights you up?"
-  - (C) The launch — the blank page, the first move, nothing into something.
-  - (Fx) The build — going deep, getting good, the long haul to mastery.
-  - (M) The variety — several things at once, switching lanes, never the same way twice.
-- OPEN QUESTION: `sun-project` also leans on a team — keep or swap?
+Swept every remaining question against the four rules. Clean, keep as-is:
+`sun-free-day`, all four Moon, `mercury-meeting`, `venus-affection`,
+`mars-conflict`, `mars-pursuit`, `mars-deadline`. Recommended keep with
+rationale: `sun-project` (team is a fixed backdrop; only your appetite varies).
 
-**ASCENDANT** — replace both modality questions:
-- `asc-newcomer` (modality) — "You walk into a room where you know nobody and
-  nothing's required of you. What does your body just do?"
-  - (C) Heads in — you make the first move and break your own ice.
-  - (Fx) Finds an anchor — a spot, a wall, a drink — and lets people come to you.
-  - (M) Blends — reads the temperature and matches it before committing.
-- `asc-pace` (modality) — "The tempo a stranger picks up from you in the first minute:"
-  - (C) Forward-leaning, like you're about to do something.
-  - (Fx) Grounded — steady, unhurried, hard to rattle.
-  - (M) Quicksilver — a little different with everyone.
+Minor flags proposed in chat, awaiting yes/edit:
+- `sun-compliment` — stem leans on what others happen to say (rules 1+2);
+  proposed hypothetical stem, options unchanged.
+- `mercury-notes` — mutable option is comedic caricature (rule 3); optional soften.
+- `mars-anger` — earth option's "the eruption gets remembered" invokes others'
+  reactions (rule 4); proposed self-observed rewording.
 
-**MERCURY** — replace both element questions:
-- `mercury-receive` (element) — "Someone has to explain something complicated that
-  you actually need to get. How do you want it delivered?"
-  - (F) Point first — the big picture and the why; details once I care.
-  - (E) Step by step, in order, a concrete example at each stage.
-  - (A) The principle or the analogy — once it clicks I've got the rest.
-  - (W) As a story — who, what was at stake — and I'll absorb it.
-- `mercury-stuck` (element) — "You're trying to learn something and it won't go in.
-  Your most likely failure mode:"
-  - (F) You skip the boring foundation, jump ahead, hit a wall you built yourself.
-  - (E) You won't move on till it's perfect, so you barely move at all.
-  - (A) You get it beautifully in theory and never actually do it.
-  - (W) You can't get it from a page — you need someone to show you, and no one's around.
+## Still to do
 
-**VENUS** — two option swaps + one rebalance:
-- `venus-fall` — replace the (E) option only: "Capability — the unshowy way they
-  handled things and people. Competence is the hottest thing you know."
-- `venus-gift` — replace the (A) option only: "Something for your head — the book
-  that'll change how you think, or tickets to the thing you'll argue about for weeks."
-- `venus-taste` (modality) — rebalance so none is the obvious pick:
-  - (C) Early — into it before it's cool, out before it peaks; a bit of a snob about it.
-  - (Fx) Fixed — you found your look a decade ago and have no interest in changing it.
-  - (M) Restless — you churn phases fast enough that half your wardrobe embarrasses you.
-
-## Still to do after the pending batch lands
-
-- **Full sweep of the not-yet-reviewed questions against the four rules** (only the
-  flagged ones have been checked): Sun `sun-free-day`/`sun-compliment`/`sun-project`;
-  all four Moon; Mercury `mercury-meeting`/`mercury-notes`; Venus `venus-affection`;
-  **all four Mars** (not yet examined at all).
-- Fold the four rules into `docs/QUIZ-VOICE.md`.
-- Then **M4 — UI** (quiz flow + breather, Web Worker search, results screen).
+- Resolve the three minor flags above with Brad; apply; `npx vitest run quiz`.
+- Four rules folded into `docs/QUIZ-VOICE.md` — DONE (2026-07-04).
+- When review wraps: delete this file, then **M4 — UI** (quiz flow + breather,
+  Web Worker search, results screen).
 
 ## Keep in mind
 
