@@ -31,7 +31,7 @@ export const QUESTIONS: Question[] = [
   {
     id: "sun-compliment",
     placement: "sun",
-    text: "Of the compliments you actually get, which one lands — the one that feels like being seen?",
+    text: "Which compliment would land the hardest — feel most like being *seen*?",
     options: [
       { text: "“Things happen when you're around.”", loads: [{ placement: "sun", element: "fire", amount: 1 }, { placement: "sun", sign: LEO, amount: 0.3 }] },
       { text: "“You're the one who actually follows through.”", loads: [{ placement: "sun", element: "earth", amount: 1 }] },
@@ -190,7 +190,7 @@ export const QUESTIONS: Question[] = [
     options: [
       { text: "Action lists — short, dated, ruthlessly next-step-shaped", loads: [{ placement: "mercury", modality: "cardinal", amount: 1 }] },
       { text: "One system, kept faithfully for years; you could find March 2019 if asked", loads: [{ placement: "mercury", modality: "fixed", amount: 1 }] },
-      { text: "Seventeen apps, four notebooks, one napkin — all of them load-bearing", loads: [{ placement: "mercury", modality: "mutable", amount: 1 }] },
+      { text: "Scattered across apps, notebooks and other systems — but you usually know which pile a thought landed in", loads: [{ placement: "mercury", modality: "mutable", amount: 1 }] },
     ],
   },
 
@@ -256,7 +256,7 @@ export const QUESTIONS: Question[] = [
     text: "Your anger, physically — the honest mechanics of it:",
     options: [
       { text: "Flash paper — instant, bright, embarrassingly fast to burn out", loads: [{ placement: "mars", element: "fire", amount: 1 }] },
-      { text: "Geological — takes months of pressure, and the eruption gets remembered", loads: [{ placement: "mars", element: "earth", amount: 1 }] },
+      { text: "Geological — months of pressure before anything shows, and when it finally goes, it *goes*", loads: [{ placement: "mars", element: "earth", amount: 1 }] },
       { text: "Verbal — it goes straight to words, and the words get *precise*", loads: [{ placement: "mars", element: "air", amount: 1 }] },
       { text: "Tidal — it swells, spills where it shouldn't, recedes, returns", loads: [{ placement: "mars", element: "water", amount: 1 }] },
     ],
