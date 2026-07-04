@@ -96,6 +96,56 @@ main {
   margin-bottom: 1.5rem;
 }
 
+.chart-wheel {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+}
+
+.wheel-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.4;
+}
+
+.house-cusp {
+  stroke: currentColor;
+  stroke-opacity: 0.3;
+  stroke-width: 1;
+}
+
+.house-cusp-asc {
+  stroke-opacity: 0.8;
+  stroke-width: 2.5;
+}
+
+.asc-marker {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.asc-label,
+.sign-glyph,
+.planet-glyph {
+  fill: currentColor;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.asc-label {
+  font-size: 11px;
+}
+
+.sign-glyph {
+  font-size: 18px;
+}
+
+.planet-glyph {
+  font-size: 20px;
+}
+
 .birth-moment-line {
   margin: 0.2rem 0;
 }

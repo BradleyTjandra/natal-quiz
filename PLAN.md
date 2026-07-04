@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 103 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 113 passing (`npm test`)
 
 ## Status
 
@@ -237,11 +237,53 @@ visual upgrade.
   Sun Sagittarius, Mercury Scorpio (1 sign away, satisfies the ±1 constraint),
   Venus Scorpio (within ±2) — astrologically consistent.
 
+## Chart wheel (done 2026-07-04)
+
+The deferred M4 visual upgrade — an SVG chart wheel added *alongside* the
+placement list/house table (both stay; the exact-degree text remains the
+verifiable source of truth per PRD, the wheel is the companion "wow factor").
+No charting library added — hand-rolled SVG, same "no new dependency" call as
+the rest of the app.
+
+- **`src/results/wheelLayout.ts`** (new) + test: the polar-coordinate geometry,
+  kept separate from SVG drawing so it's plain-function-testable (same split
+  as `houses.ts` vs. `HouseTable.tsx`). **A real correctness fix surfaced while
+  implementing this** (caught before writing any component code, not after):
+  the initial plan anchored the wheel to the Ascendant's *exact degree*, which
+  would draw house-cusp spokes at odd angles inconsistent with `houses.ts`'s
+  own whole-sign math (house 1 starts at 0° of the Ascendant's *sign*, not at
+  its exact degree). Fixed by anchoring to the sign start instead — this also
+  simplified the code, since it makes the 12 house-cusp angles fixed constants
+  reusable across every chart, and lets the wheel directly reuse
+  `houseSigns()` rather than re-deriving house placement. The Ascendant's
+  exact degree gets its own separate marker line inside house 1's wedge.
+  Also handles glyph collision: Mercury/Venus's proximity constraints to the
+  Sun mean those three are structurally often clustered, so bodies within 10°
+  of each other get bumped to different radius "lanes" (capped at 5) rather
+  than rendering on top of each other.
+- **`src/results/ChartWheel.tsx`** (new): pure SVG presentation — 12 sign
+  wedges (Unicode zodiac glyphs), 12 house-cusp spokes (the Ascendant's own
+  thicker), the 8 charted bodies (Unicode planet glyphs) laned by the above.
+  No aspect lines (out of scope per PRD, not reconsidered).
+- **`src/results/ResultsScreen.tsx`**: renders `ChartWheel` between the birth
+  moment and the placement list.
+- Verified: `wheelLayout.test.ts` checks the geometry at the four cardinal
+  points and the lane-collision behavior. In the browser, the preview tool's
+  screenshot capture was stuck for the whole session (confirmed unrelated to
+  this change — it failed even on the plain, freshly-loaded quiz page with
+  none of the new code rendered yet). Verified correctness instead by reading
+  the actual rendered SVG's coordinates out of the DOM and hand-checking them
+  against the geometry formulas for a real chart result (Sun and Mercury glyph
+  positions, including Mercury's lane bump, matched the hand calculation
+  exactly). `npm run build` succeeds; worker still splits into its own chunk.
+
 ## Next up
 
 - **M5 (optional)** — Jupiter/Saturn quiz questions as low-weight year
   tie-breakers.
-- Chart-wheel results view (deferred from M4).
 - Deployment: reconcile the `master`/`main` branch mismatch with
   `deploy.yml`'s trigger, then push to GitHub Pages when Brad's ready.
 - Revisit the solver's degree-mapping dials once real people take the quiz.
+- A proper visual (screenshot) check of the chart wheel once the preview
+  tool's screenshot capture is working again — the numeric verification is
+  solid, but Brad should still eyeball it.

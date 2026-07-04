@@ -1,6 +1,7 @@
 import type { Candidate } from "../ephemeris/stage4.ts";
 import { signIndexOf } from "../ephemeris/signs.ts";
 import BirthMoment from "./BirthMoment.tsx";
+import ChartWheel from "./ChartWheel.tsx";
 import PlacementList from "./PlacementList.tsx";
 import HouseTable from "./HouseTable.tsx";
 
@@ -19,6 +20,7 @@ export default function ResultsScreen({ candidate }: Props) {
       <BirthMoment date={candidate.date} city={candidate.city} />
 
       <h2>Your chart</h2>
+      <ChartWheel chart={candidate.chart} />
       <PlacementList chart={candidate.chart} />
 
       <h2>Your houses</h2>
