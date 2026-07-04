@@ -50,13 +50,13 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "sun-decade",
+    id: "sun-hobby",
     placement: "sun",
-    text: "Zoom out on your last ten years. Honestly, the shape of them is:",
+    text: "A year ago you picked up a hobby you genuinely liked. Where does it stand today, honestly?",
     options: [
-      { text: "Chapters — each one opened deliberately, often by blowing up the previous one", loads: [{ placement: "sun", modality: "cardinal", amount: 1 }] },
-      { text: "One long throughline, deepening — the same core, better executed", loads: [{ placement: "sun", modality: "fixed", amount: 1 }] },
-      { text: "Reinventions you didn't exactly choose — you look back and count four different lives", loads: [{ placement: "sun", modality: "mutable", amount: 1 }] },
+      { text: "It lit the fuse for two newer pursuits; the original is fondly abandoned", loads: [{ placement: "sun", modality: "cardinal", amount: 1 }] },
+      { text: "Deeper than ever — there is gear now, and opinions, and it's a bit of who you are", loads: [{ placement: "sun", modality: "fixed", amount: 1 }] },
+      { text: "It cross-pollinated with two other interests and morphed into something unrecognisable", loads: [{ placement: "sun", modality: "mutable", amount: 1 }] },
     ],
   },
 
@@ -78,7 +78,7 @@ export const QUESTIONS: Question[] = [
     text: "Forget how your place looks — what does home have to *feel* like, or it isn't home?",
     options: [
       { text: "A launchpad — somewhere to refuel between adventures, door half-open", loads: [{ placement: "moon", element: "fire", amount: 1 }] },
-      { text: "A den — warm, stocked, physically comfortable in a way guests remark on", loads: [{ placement: "moon", element: "earth", amount: 1 }] },
+      { text: "A den — the good blanket, the stocked fridge, the one correct chair", loads: [{ placement: "moon", element: "earth", amount: 1 }] },
       { text: "A salon — light, books mid-pile, room for people to drop by and talk", loads: [{ placement: "moon", element: "air", amount: 1 }] },
       { text: "A shell — yours alone, where nobody can get to you unless invited", loads: [{ placement: "moon", element: "water", amount: 1 }, { placement: "moon", sign: CANCER, amount: 0.4 }] },
     ],
@@ -94,13 +94,13 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "moon-weather",
+    id: "moon-low-mood",
     placement: "moon",
-    text: "Your own feelings, described as weather:",
+    text: "You've been in a low mood for a couple of days now. How does it usually end?",
     options: [
-      { text: "Storms — sudden, loud, gone by morning", loads: [{ placement: "moon", modality: "cardinal", amount: 1 }] },
-      { text: "Climate — slow to change, but when it changes, it *changes*", loads: [{ placement: "moon", modality: "fixed", amount: 1 }] },
-      { text: "Coastal — four seasons a day, hard to forecast even for you", loads: [{ placement: "moon", modality: "mutable", amount: 1 }] },
+      { text: "You snap yourself out — clean the flat, book the thing, make the overdue call, and it lifts", loads: [{ placement: "moon", modality: "cardinal", amount: 1 }] },
+      { text: "It doesn't 'end', it recedes — on its own schedule, and pushing it never helps", loads: [{ placement: "moon", modality: "fixed", amount: 1 }] },
+      { text: "Something small changes the channel — one conversation, weather, a song — and it's just gone", loads: [{ placement: "moon", modality: "mutable", amount: 1 }] },
     ],
   },
 
@@ -108,23 +108,23 @@ export const QUESTIONS: Question[] = [
   {
     id: "asc-dinner",
     placement: "ascendant",
-    text: "A close friend's birthday dinner, ten people, you know two of them. First half hour — where are you, really?",
+    text: "A close friend's birthday dinner, ten people, you know two of them. First half hour — what are *you* doing?",
     options: [
-      { text: "Mid-table, mid-story, already slightly too loud — and the table's laughing", loads: [{ placement: "ascendant", element: "fire", amount: 1 }, { placement: "ascendant", sign: LEO, amount: 0.3 }] },
+      { text: "Telling the story — you didn't plan to hold the floor, it just keeps happening", loads: [{ placement: "ascendant", element: "fire", amount: 1 }, { placement: "ascendant", sign: LEO, amount: 0.3 }] },
       { text: "Settled into one seat, unhurried, asking the person next to you real questions", loads: [{ placement: "ascendant", element: "earth", amount: 1 }] },
-      { text: "Everywhere — you've had two minutes with everyone by the time starters land", loads: [{ placement: "ascendant", element: "air", amount: 1 }] },
-      { text: "Reading the room from a corner, then one conversation that turns weirdly deep", loads: [{ placement: "ascendant", element: "water", amount: 1 }] },
+      { text: "Keeping it light and moving — you drift between clusters rather than settling into one", loads: [{ placement: "ascendant", element: "air", amount: 1 }] },
+      { text: "Hanging back to read the room first, then attaching to the one person you've picked", loads: [{ placement: "ascendant", element: "water", amount: 1 }] },
     ],
   },
   {
-    id: "asc-guess",
+    id: "asc-five-minutes",
     placement: "ascendant",
-    text: "People who've known you under an hour keep guessing the same wrong-but-telling thing about you. It's some version of:",
+    text: "Someone chats with you for five minutes at a bus stop, then describes you to a friend. Their honest one-liner:",
     options: [
-      { text: "“You must be exhausting to keep up with” — they read intensity", loads: [{ placement: "ascendant", element: "fire", amount: 1 }] },
-      { text: "“You seem like you have your life together” — they read solidity", loads: [{ placement: "ascendant", element: "earth", amount: 1 }] },
-      { text: "“You must know everyone here” — they read quickness, connection", loads: [{ placement: "ascendant", element: "air", amount: 1 }] },
-      { text: "“You're hard to read” — they sense more under the surface than you show", loads: [{ placement: "ascendant", element: "water", amount: 1 }] },
+      { text: "“A lot of energy. In a good way. Mostly.”", loads: [{ placement: "ascendant", element: "fire", amount: 1 }] },
+      { text: "“Calm. Seemed like someone with their life handled.”", loads: [{ placement: "ascendant", element: "earth", amount: 1 }] },
+      { text: "“Quick. We covered about ten topics in five minutes.”", loads: [{ placement: "ascendant", element: "air", amount: 1 }] },
+      { text: "“Quiet at first — but there's clearly something going on in there.”", loads: [{ placement: "ascendant", element: "water", amount: 1 }] },
     ],
   },
   {

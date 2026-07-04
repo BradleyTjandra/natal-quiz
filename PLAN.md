@@ -184,6 +184,9 @@ all-fire persona gets six Aries placements at confidence ~1.
 
 ## Next up
 
-- Brad reviews/edits the question wording (`src/quiz/questions.ts`).
+- **Question-wording review in progress** — resume from
+  [docs/QUIZ-REVIEW-STATUS.md](docs/QUIZ-REVIEW-STATUS.md) (four agreed rules, a
+  pending batch of redrafts awaiting sign-off, and the remaining sweep). Delete
+  that file once the review is done.
 - **M4** — UI: quiz flow with breather, Web Worker search with loading state,
   results screen. Revisit the solver dials once real people take the quiz.
