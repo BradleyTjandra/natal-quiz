@@ -128,10 +128,16 @@ main {
 
 .asc-label,
 .sign-glyph,
-.planet-glyph {
+.planet-glyph,
+.house-label {
   fill: currentColor;
   text-anchor: middle;
   dominant-baseline: middle;
+}
+
+.house-label {
+  font-size: 11px;
+  fill-opacity: 0.6;
 }
 
 .asc-label {

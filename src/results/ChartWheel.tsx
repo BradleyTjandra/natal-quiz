@@ -1,6 +1,7 @@
 import { CHART_BODIES, type Chart, type ChartBody } from "../ephemeris/sky.ts";
 import {
   HOUSE_CUSP_ANGLES,
+  HOUSE_LABEL_ANGLES,
   signWedges,
   bodyAngle,
   ascendantMarkerAngle,
@@ -18,6 +19,7 @@ const R_OUTER = 190; // outer edge of the sign band
 const R_SIGN_INNER = 155; // inner edge of the sign band / where house spokes reach
 const R_SIGN_LABEL = (R_OUTER + R_SIGN_INNER) / 2;
 const R_SPOKE_INNER = 12; // small gap at center so all 12 spokes don't converge into a knot
+const R_HOUSE_LABEL = (R_SIGN_INNER + R_SPOKE_INNER) / 2; // house numbers sit inside the spokes, between them and center
 const R_PLANET_BASE = 140; // lane 0 (innermost-of-the-planet-lanes... see LANE_STEP)
 const LANE_STEP = 25; // each collision-avoidance lane steps this far further in
 
@@ -70,6 +72,15 @@ export default function ChartWheel({ chart }: Props) {
             y2={outer.y}
             className={house === 0 ? "house-cusp house-cusp-asc" : "house-cusp"}
           />
+        );
+      })}
+
+      {HOUSE_LABEL_ANGLES.map((theta, i) => {
+        const pos = pointOnWheel(theta, R_HOUSE_LABEL, CENTER, CENTER);
+        return (
+          <text key={i} x={pos.x} y={pos.y} className="house-label">
+            {i + 1}
+          </text>
         );
       })}
 

@@ -78,6 +78,12 @@ export function pointOnWheel(
   };
 }
 
+// Midpoint angle of each house wedge, house 1 first -- where the "1".."12"
+// house-number labels sit, halfway between that house's cusp and the next.
+export const HOUSE_LABEL_ANGLES: number[] = HOUSE_CUSP_ANGLES.map((theta) =>
+  normalizeDegrees(theta - 15),
+);
+
 // Smallest angle between two directions, 0..180.
 function angularDistance(a: number, b: number): number {
   const d = Math.abs(normalizeDegrees(a) - normalizeDegrees(b));
