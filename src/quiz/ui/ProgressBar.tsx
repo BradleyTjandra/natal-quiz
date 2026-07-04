@@ -6,8 +6,13 @@ interface Props {
 export default function ProgressBar({ current, total }: Props) {
   const pct = Math.round((current / total) * 100);
   return (
-    <div className="progress-bar" aria-label={`Question ${current + 1} of ${total}`}>
-      <div className="progress-fill" style={{ width: `${pct}%` }} />
+    <div className="progress-wrap">
+      <div className="progress-bar" role="progressbar" aria-valuenow={current + 1} aria-valuemin={1} aria-valuemax={total}>
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="progress-label">
+        Question {current + 1} of {total}
+      </p>
     </div>
   );
 }

@@ -39,12 +39,21 @@ main {
   background: #8881;
 }
 
+.progress-wrap {
+  margin-bottom: 1.5rem;
+}
+
 .progress-bar {
   height: 6px;
   background: #8883;
   border-radius: 999px;
-  margin-bottom: 1.5rem;
   overflow: hidden;
+}
+
+.progress-label {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
 }
 
 .progress-fill {
