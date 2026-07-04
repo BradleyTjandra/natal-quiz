@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 76 passing (`npm test`)
+**Last updated:** 2026-07-04 · **Tests:** 93 passing (`npm test`)
 
 ## Status
 
@@ -14,7 +14,7 @@ instead if the design itself changes.
 | M0 | Project setup (this session) | ✅ Done |
 | M1 | Ephemeris search module (`src/ephemeris/`) | ✅ Done |
 | M2 | Solver (`src/solver/`) | ✅ Done |
-| M3 | Quiz content & scoring (`src/quiz/`) | 🟡 Engine done; question bank to author |
+| M3 | Quiz content & scoring (`src/quiz/`) | 🟡 Engine + drafted bank; wording review by Brad pending |
 | M4 | UI (quiz flow, results screen) | ⬜ Not started |
 | M5 | Jupiter/Saturn quiz questions (optional) | ⬜ Not started |
 
@@ -161,14 +161,29 @@ the 12 signs → the `ScoreVectors` the solver consumes. Element outweighs modal
 land on the expected signs, dual-loading, unanswered → flat, and a
 scoreQuiz→solve integration.
 
+## M3b — Question bank (drafted 2026-07-04; wording review pending)
+
+`src/quiz/questions.ts`: all 24 questions drafted (4 per placement, big three
+before the breather at `BREATHER_AFTER`), per the authoring rules in
+`docs/QUIZ-VOICE.md` (specific scenes, concrete-behaviour options, no
+socially-correct answer — rules distilled partly from Cate Hall's Cringe
+Minefield quiz). One Mars question dual-loads the Sun; four small archetype
+nudges (Leo ×2, Cancer, Taurus, Scorpio) via the new optional `sign` field in
+`AxisLoad`. **The wording is a draft for Brad to edit** — `loads` are the
+scoring contract, text is free to change.
+
+Also fixed via the bank's end-to-end test: the solver's `decisiveness` was
+structurally capped at ~1/3 (the element/modality runner-up always shares the
+winner's stronger axis), so even perfectly consistent answers read as
+wishy-washy. Now calibrated (`CONSISTENT_MARGIN`) so full consistency → full
+confidence; tune alongside the quiz's axis weights if those change.
+
+`npm run try:quiz -- random|aaab...` plays the whole pipeline: answers → target
+→ real birth moment. A random persona correctly reads as all coin-flips; an
+all-fire persona gets six Aries placements at confidence ~1.
+
 ## Next up
 
-**M3b — Question bank** (`src/quiz/questions.ts`): author the actual ~24 questions
-(4 per placement) — worded questions, options, and their element/modality
-loadings, plus the mid-quiz breather. This is content/product work to do *with*
-Brad (astrological voice, which questions dual-load), not to autogenerate. The
-engine and solver already consume whatever the bank produces.
-
-Then **M4** (UI: quiz flow, Web Worker search, results screen). Revisit the
-solver's `degreeFrom` dials and the quiz's element/modality weight once real
-questions produce real vector shapes.
+- Brad reviews/edits the question wording (`src/quiz/questions.ts`).
+- **M4** — UI: quiz flow with breather, Web Worker search with loading state,
+  results screen. Revisit the solver dials once real people take the quiz.

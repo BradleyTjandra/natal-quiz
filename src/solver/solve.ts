@@ -34,10 +34,20 @@ function signDistance(a: number, b: number): number {
   return Math.min(d, 12 - d);
 }
 
-// How decisively the quiz picked `sign`, normalised to 0..1: 1 = runaway winner,
-// 0 = a dead heat — or `sign` wasn't even the top choice, which happens when a
-// constraint forces the planet off its raw winner. Normalising by the vector's
-// own spread keeps this independent of the quiz's scoring units.
+// The winner-vs-runner-up margin a *fully consistent* quiz-taker produces, as a
+// fraction of their vector's range. Because the quiz scores element and modality
+// (not signs directly), the runner-up always shares the winner's stronger axis —
+// pure Scorpio's runner-up is Cancer (fellow water) — so even perfect consistency
+// yields a margin of only ≈ the weaker axis's share of the total, i.e.
+// MODALITY_WEIGHT/(ELEMENT_WEIGHT+MODALITY_WEIGHT) ≈ 1/3 at the quiz's current
+// weights. Dividing by this reads full consistency as full confidence. Tune
+// alongside the quiz weights if those change.
+const CONSISTENT_MARGIN = 1 / 3;
+
+// How decisively the quiz picked `sign`, normalised to 0..1: 1 = as decisive as
+// answers can be, 0 = a dead heat — or `sign` wasn't even the top choice, which
+// happens when a constraint forces the planet off its raw winner. Normalising by
+// the vector's own spread keeps this independent of the quiz's scoring units.
 function decisiveness(v: SignScores, sign: number): number {
   const max = Math.max(...v);
   const min = Math.min(...v);
@@ -48,7 +58,8 @@ function decisiveness(v: SignScores, sign: number): number {
   for (let i = 0; i < 12; i++) {
     if (i !== sign && v[i] > runnerUp) runnerUp = v[i];
   }
-  return Math.max(0, Math.min(1, (v[sign] - runnerUp) / range));
+  const margin = (v[sign] - runnerUp) / range;
+  return Math.max(0, Math.min(1, margin / CONSISTENT_MARGIN));
 }
 
 // The target degree from decisiveness (SPEC): landslide (→1) sits the planet

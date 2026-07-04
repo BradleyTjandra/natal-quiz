@@ -26,14 +26,19 @@ export const SIGN_MODALITY: Modality[] = [
   "cardinal", "fixed", "mutable", "cardinal", "fixed", "mutable",
 ];
 
-// One axis push from choosing an option: it moves `placement` toward an element
+// One push from choosing an option: it moves `placement` toward an element
 // and/or a modality by `amount`. Options can carry several loads, which is how a
 // question dual-loads (e.g. a conflict-style answer loading mostly Mars, partly
-// the Sun's element — SPEC).
+// the Sun's element — SPEC). `sign` is the archetype escape hatch: a small nudge
+// to one specific sign, for options whose flavour the two axes can't express
+// (Leo's need to be *seen* isn't just fire+fixed). Use sparingly and small, so
+// the axis structure — which is what makes similar signs score similarly, and
+// therefore what makes fallbacks graceful — stays dominant.
 export interface AxisLoad {
   placement: QuizzedPlacement;
   element?: Element;
   modality?: Modality;
+  sign?: number; // 0..11, direct archetype nudge
   amount: number;
 }
 
@@ -70,12 +75,14 @@ function zeros<K extends string>(keys: K[]): Record<K, number> {
 }
 
 export function scoreQuiz(questions: Question[], answers: Answers): ScoreVectors {
-  // Per-placement running totals on each axis.
+  // Per-placement running totals: the two axes, plus direct sign nudges.
   const elem = {} as Record<QuizzedPlacement, Record<Element, number>>;
   const mod = {} as Record<QuizzedPlacement, Record<Modality, number>>;
+  const direct = {} as Record<QuizzedPlacement, number[]>;
   for (const p of PLACEMENTS) {
     elem[p] = zeros(ELEMENTS);
     mod[p] = zeros(MODALITIES);
+    direct[p] = new Array(12).fill(0);
   }
 
   for (const q of questions) {
@@ -84,17 +91,19 @@ export function scoreQuiz(questions: Question[], answers: Answers): ScoreVectors
     for (const load of q.options[choice].loads) {
       if (load.element) elem[load.placement][load.element] += load.amount;
       if (load.modality) mod[load.placement][load.modality] += load.amount;
+      if (load.sign != null) direct[load.placement][load.sign] += load.amount;
     }
   }
 
-  // Project each placement's axis totals onto the 12 signs.
+  // Project each placement's axis totals onto the 12 signs, then add nudges.
   const vectors = {} as ScoreVectors;
   for (const p of PLACEMENTS) {
     vectors[p] = Array.from(
       { length: 12 },
       (_, s) =>
         ELEMENT_WEIGHT * elem[p][SIGN_ELEMENT[s]] +
-        MODALITY_WEIGHT * mod[p][SIGN_MODALITY[s]],
+        MODALITY_WEIGHT * mod[p][SIGN_MODALITY[s]] +
+        direct[p][s],
     );
   }
   return vectors;

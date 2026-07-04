@@ -82,6 +82,32 @@ describe("dual-loading", () => {
   });
 });
 
+describe("direct sign nudges", () => {
+  it("breaks an axis tie toward the nudged sign without overwhelming the axes", () => {
+    // Fire alone leaves Aries/Leo/Sagittarius tied; a small Leo nudge should
+    // decide among them — but not beat a sign that actually won both axes.
+    const q: Question[] = [
+      {
+        id: "spotlight",
+        placement: "sun",
+        text: "seen?",
+        options: [
+          {
+            text: "yes",
+            loads: [
+              { placement: "sun", element: "fire", amount: 1 },
+              { placement: "sun", sign: 4, amount: 0.3 }, // Leo
+            ],
+          },
+        ],
+      },
+    ];
+    const v = scoreQuiz(q, { spotlight: 0 }).sun;
+    expect(v.indexOf(Math.max(...v))).toBe(4); // Leo wins the fire tie
+    expect(v[4] - v[0]).toBeCloseTo(0.3); // ...by exactly the nudge
+  });
+});
+
 describe("scoreQuiz → solve integration", () => {
   it("produces vectors the solver turns into a coherent Target", () => {
     const qs = sunQuestions();

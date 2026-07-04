@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "gen:ingress": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/generate-ingress.ts",
-    "try:search": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/try-search.ts"
+    "try:search": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/try-search.ts",
+    "try:quiz": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/try-quiz.ts"
   },
   "dependencies": {
     "astronomy-engine": "^2.1.19",
