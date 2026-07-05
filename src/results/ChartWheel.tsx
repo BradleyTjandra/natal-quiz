@@ -3,6 +3,8 @@ import {
   HOUSE_CUSP_ANGLES,
   HOUSE_LABEL_ANGLES,
   signWedges,
+  signElement,
+  wedgePath,
   bodyAngle,
   ascendantMarkerAngle,
   pointOnWheel,
@@ -57,6 +59,14 @@ export default function ChartWheel({ chart }: Props) {
       role="img"
       aria-label="Your natal chart wheel"
     >
+      {wedges.map((wedge) => (
+        <path
+          key={`tint-${wedge.sign}`}
+          d={wedgePath(wedge, R_OUTER, R_SIGN_INNER, CENTER, CENTER)}
+          className={`wedge-tint wedge-${signElement(wedge.sign)}`}
+        />
+      ))}
+
       <circle cx={CENTER} cy={CENTER} r={R_OUTER} className="wheel-ring" />
       <circle cx={CENTER} cy={CENTER} r={R_SIGN_INNER} className="wheel-ring" />
 

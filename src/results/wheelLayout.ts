@@ -51,6 +51,40 @@ export function signWedges(ascendantLongitude: number): Wedge[] {
   }));
 }
 
+// Classical element per sign (0=Aries..11=Pisces), repeating fire/earth/air/
+// water every 3 signs -- used purely for decorative wedge tinting on the wheel.
+const ELEMENTS = ["fire", "earth", "air", "water"] as const;
+export type Element = (typeof ELEMENTS)[number];
+export function signElement(sign: number): Element {
+  return ELEMENTS[sign % 4];
+}
+
+// SVG path for one wedge's annular slice (between rInner and rOuter), for the
+// decorative element-tint fill behind the sign glyphs. thetaEnd is always
+// exactly 30deg less than thetaStart (see signWedges), so the sweep-flag
+// direction is fixed regardless of wrapping: the outer edge sweeps
+// counterclockwise on screen (theta decreasing) and the inner edge sweeps
+// back clockwise (theta increasing).
+export function wedgePath(
+  wedge: Wedge,
+  rOuter: number,
+  rInner: number,
+  cx: number,
+  cy: number,
+): string {
+  const outerStart = pointOnWheel(wedge.thetaStart, rOuter, cx, cy);
+  const outerEnd = pointOnWheel(wedge.thetaEnd, rOuter, cx, cy);
+  const innerEnd = pointOnWheel(wedge.thetaEnd, rInner, cx, cy);
+  const innerStart = pointOnWheel(wedge.thetaStart, rInner, cx, cy);
+  return [
+    `M ${outerStart.x} ${outerStart.y}`,
+    `A ${rOuter} ${rOuter} 0 0 0 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A ${rInner} ${rInner} 0 0 1 ${innerStart.x} ${innerStart.y}`,
+    "Z",
+  ].join(" ");
+}
+
 // Screen angle for a body at `longitude`, anchored to the start of the
 // Ascendant's sign (see module comment for why that's the anchor, not the
 // Ascendant's exact degree).
