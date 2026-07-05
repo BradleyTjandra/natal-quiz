@@ -39,7 +39,12 @@ export default function QuizFlow({ onComplete }: Props) {
   return (
     <div className="quiz-flow">
       <ProgressBar current={index} total={QUESTIONS.length} />
-      <QuestionCard question={QUESTIONS[index]} onAnswer={handleAnswer} onBack={handleBack} />
+      <QuestionCard
+        question={QUESTIONS[index]}
+        onAnswer={handleAnswer}
+        onBack={handleBack}
+        selectedIndex={answers[QUESTIONS[index].id]}
+      />
     </div>
   );
 }

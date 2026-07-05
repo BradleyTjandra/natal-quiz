@@ -17,6 +17,27 @@
   --water: #6f93c0;
 }
 
+/* Daylight variant: same mystical-astrology palette, sun-drenched instead of
+   night-sky — kept as a data attribute (not a media query) so the toggle
+   button can override the system preference. */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-deep: #f2e9d8;
+  --bg-mid: #fbf5e8;
+  --ink: #2c2440;
+  --ink-dim: #6b6382;
+  --gold: #a9782e;
+  --gold-bright: #8a5f1f;
+  --card-bg: rgba(255, 255, 255, 0.55);
+  --card-border: rgba(169, 120, 46, 0.35);
+
+  --fire: #b3503f;
+  --earth: #5f7a45;
+  --air: #a68f3d;
+  --water: #3f6693;
+}
+
 body {
   margin: 0;
   color: var(--ink);
@@ -35,6 +56,12 @@ body {
   background-attachment: fixed;
   background-size: cover;
   min-height: 100vh;
+}
+
+/* Stars would just look like stray specks on a daylight sky, so the light
+   theme drops them and keeps only the soft gradient. */
+[data-theme="light"] body {
+  background-image: radial-gradient(ellipse at top, var(--bg-mid), var(--bg-deep) 65%);
 }
 
 main {
@@ -77,6 +104,10 @@ h2 {
   max-width: 480px;
   margin: 0 auto;
   padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .site-header a {
@@ -140,6 +171,11 @@ h2 {
 .option-button:hover {
   border-color: var(--gold);
   background: rgba(205, 164, 94, 0.12);
+}
+
+.option-button--selected {
+  border-color: var(--gold);
+  background: rgba(205, 164, 94, 0.2);
 }
 
 .progress-wrap {
@@ -321,4 +357,41 @@ h2 {
 
 .error-message {
   color: #e08070;
+}
+
+.theme-toggle {
+  flex: none;
+  padding: 0.3rem 0.6rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+.restart-button {
+  display: block;
+  margin: 1.5rem auto 0;
+  padding: 0.7rem 1.4rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--gold-bright);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.restart-button:hover {
+  border-color: var(--gold);
+  background: rgba(205, 164, 94, 0.12);
 }
