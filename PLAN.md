@@ -312,3 +312,23 @@ originally assumed in the docs; CLAUDE.md and this file corrected to match.
 - A proper visual (screenshot) check of the chart wheel once the preview
   tool's screenshot capture is working again — the numeric verification is
   solid, but Brad should still eyeball it.
+
+### Quiz wording — flagged by Brad, needs another editing pass
+
+- Q13 — still not the best question; revisit.
+- Q18 — "your history" is unclearly worded.
+- Q21 — "withdraw" vs. "going quiet" options aren't clearly distinct.
+- Q12 — "a little different with everyone" option is odd: the quiz-taker
+  can't really know how they come across to *others* from the inside, so
+  this may not be answerable from self-knowledge alone.
+
+### Feature/product to-dos
+
+- Weak recency weighting in the search: when two candidate birth years
+  score about equally, prefer the more recent one (e.g. 1990 over 1700).
+  Small nudge only, shouldn't override a genuinely better match.
+- Results page: add a "redo the quiz" button.
+- Dark/light mode: check whether one exists today; if not, add support.
+- Quiz back button: when going back, keep the previously-selected option
+  highlighted (so a user backing up to tweak one answer doesn't lose the
+  rest) instead of showing the question with nothing selected.
