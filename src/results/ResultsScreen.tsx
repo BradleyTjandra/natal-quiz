@@ -7,11 +7,12 @@ import HouseTable from "./HouseTable.tsx";
 
 interface Props {
   candidate: Candidate;
+  onRestart: () => void;
 }
 
 // Presents the chart as simply the user's own (PRD: "never frame the result
 // as a best available match") — nothing here reads candidate.score.
-export default function ResultsScreen({ candidate }: Props) {
+export default function ResultsScreen({ candidate, onRestart }: Props) {
   const ascSignIndex = signIndexOf(candidate.chart.ascendant);
 
   return (
@@ -31,6 +32,10 @@ export default function ResultsScreen({ candidate }: Props) {
       <p className="verification-hint">
         Check it yourself on any astrology site.
       </p>
+
+      <button type="button" className="restart-button" onClick={onRestart}>
+        Redo the quiz
+      </button>
     </div>
   );
 }

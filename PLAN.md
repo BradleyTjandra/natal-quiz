@@ -7,6 +7,52 @@ instead if the design itself changes.
 
 **Last updated:** 2026-07-05 · **Tests:** 113 passing (`npm test`)
 
+## Redo-quiz button + dark/light mode (done 2026-07-05)
+
+Two more items off the feature to-do list:
+
+- **Redo the quiz** — `ResultsScreen.tsx` takes an `onRestart` prop and
+  renders a `.restart-button`. `App.tsx` bumps a `quizKey` counter on
+  restart and passes it as `<QuizFlow key={quizKey}>`, so React remounts
+  `QuizFlow` from scratch (fresh `index`/`answers`/`pastBreather`) rather
+  than needing to manually reset each piece of its internal state.
+- **Dark/light mode** — confirmed no theme toggle existed yet, so added one.
+  Since this branch's whole point is the mystical night-sky look, the light
+  theme is a *daylight variant of the same palette* (parchment background,
+  same gold accents) rather than a generic light theme, and drops the
+  starfield radial-gradients (`src/index.css`'s `[data-theme="light"]`
+  rules) since white dots read as stray specks on a light background rather
+  than stars.
+  - **`src/useTheme.ts`** (new): a small hook — reads `localStorage`,
+    falls back to `prefers-color-scheme`, toggles a `data-theme="light"`
+    attribute on `<html>` (dark stays the CSS default, no attribute needed).
+  - **`src/App.tsx`**: `☾ Dark` / `☀ Light` toggle button in the header.
+  - Verified in the browser: toggled light, confirmed body background
+    computed to the new parchment color and `data-theme`/`localStorage`
+    both updated; toggled back to dark, confirmed the attribute clears.
+    Played the full 24-question quiz through to results, clicked "Redo the
+    quiz," confirmed it lands back on question 1 with no leftover state
+    (no back button showing).
+- `npx tsc --noEmit` clean, `npm test` 113/113 passing throughout.
+
+## Back button preserves selection (done 2026-07-05)
+
+Small fix: previously, backing up to a question always showed it with no
+option selected, even if it had already been answered.
+
+- **`src/quiz/ui/QuestionCard.tsx`**: new optional `selectedIndex` prop; the
+  matching option (compared by *original*, not shuffled-display, index) gets
+  an `option-button--selected` class.
+- **`src/quiz/ui/QuizFlow.tsx`**: passes `answers[QUESTIONS[index].id]` as
+  `selectedIndex`, since `answers` was already tracked keyed by question id.
+- **`src/index.css`**: `.option-button--selected` style (gold border/tint,
+  matching the existing hover state).
+- Verified in the browser: answered Q1 and Q2, advanced to Q3, clicked Back
+  twice, confirmed the shuffled option corresponding to the original answered
+  index carried the selected class (checked via the button's React
+  `selectedIndex` prop, not just visually, since display order is shuffled).
+  `npx tsc --noEmit` and `npm test` (113/113) both clean.
+
 ## Status
 
 | Milestone | What | Status |
@@ -327,8 +373,13 @@ originally assumed in the docs; CLAUDE.md and this file corrected to match.
 - Weak recency weighting in the search: when two candidate birth years
   score about equally, prefer the more recent one (e.g. 1990 over 1700).
   Small nudge only, shouldn't override a genuinely better match.
-- Results page: add a "redo the quiz" button.
-- Dark/light mode: check whether one exists today; if not, add support.
-- Quiz back button: when going back, keep the previously-selected option
-  highlighted (so a user backing up to tweak one answer doesn't lose the
-  rest) instead of showing the question with nothing selected.
+- ~~Results page: add a "redo the quiz" button.~~ and ~~Dark/light mode~~ —
+  done 2026-07-05, see "Redo-quiz button + dark/light mode" above.
+- ~~Quiz back button: when going back, keep the previously-selected option
+  highlighted~~ — done 2026-07-05: `QuestionCard` takes an optional
+  `selectedIndex` prop; `QuizFlow` passes `answers[question.id]` for the
+  current question, so a re-visited question highlights the original pick.
+  Compares against the *original* option index (not the shuffled display
+  position), verified in the browser by checking the highlighted button's
+  `selectedIndex` React prop matched its original index even though display
+  order was shuffled.
