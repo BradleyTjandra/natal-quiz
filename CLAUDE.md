@@ -51,7 +51,7 @@ smart and capable, just not yet fluent in this particular domain.
 - Each milestone in SPEC.md has its own test plan — write and run those tests as
   part of finishing the milestone, not as an afterthought.
 - Deployment is GitHub Pages, project repo `natal-quiz`, serving at
-  `brad.tj/natal-quiz` (inherits the custom domain from Brad's user-page repo
+  `bradleytjandra.com/natal-quiz` (inherits the custom domain from Brad's user-page repo
   automatically — confirmed via GitHub's docs). `vite.config.ts`'s `base` setting
   depends on this; don't change one without the other.
 

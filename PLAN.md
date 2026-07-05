@@ -24,12 +24,11 @@ instead if the design itself changes.
   `vite.config.ts`, `index.html`, `src/main.tsx`, `src/App.tsx`).
 - `astronomy-engine` installed (runtime dependency, will be used starting M1).
 - `vite.config.ts` sets `base: "/natal-quiz/"` so the built app resolves correctly
-  when served from `brad.tj/natal-quiz` rather than domain root.
+  when served from `bradleytjandra.com/natal-quiz` rather than domain root.
 - `.github/workflows/deploy.yml` added: builds and deploys to GitHub Pages on push
-  to `main`. **Inert for now** — it only runs once this repo exists on GitHub with
-  Pages enabled. Confirmed via GitHub's docs that a project-site repo automatically
-  inherits the `brad.tj` custom domain as a subpath (no extra DNS/CNAME work needed
-  in this repo).
+  to `main`. Confirmed via GitHub's docs that a project-site repo automatically
+  inherits the `bradleytjandra.com` custom domain as a subpath (no extra DNS/CNAME
+  work needed in this repo).
 - Local git repo initialized. No GitHub remote yet — deliberately deferred until
   the user is ready to push.
   - **Before the first push:** the local branch is `master` but `deploy.yml`
@@ -277,12 +276,19 @@ the rest of the app.
   positions, including Mercury's lane bump, matched the hand calculation
   exactly). `npm run build` succeeds; worker still splits into its own chunk.
 
+## Deployment (done 2026-07-05)
+
+Local branch renamed `master` → `main` to match `deploy.yml`'s trigger. GitHub
+repo `BradleyTjandra/natal-quiz` created (public), Pages enabled with
+"GitHub Actions" as the source, pushed. Workflow ran and deployed successfully.
+Live at **bradleytjandra.com/natal-quiz** — the custom domain inherited from
+Brad's GitHub user-page repo is `bradleytjandra.com`, not `brad.tj` as
+originally assumed in the docs; CLAUDE.md and this file corrected to match.
+
 ## Next up
 
 - **M5 (optional)** — Jupiter/Saturn quiz questions as low-weight year
   tie-breakers.
-- Deployment: reconcile the `master`/`main` branch mismatch with
-  `deploy.yml`'s trigger, then push to GitHub Pages when Brad's ready.
 - Revisit the solver's degree-mapping dials once real people take the quiz.
 - A proper visual (screenshot) check of the chart wheel once the preview
   tool's screenshot capture is working again — the numeric verification is
