@@ -5,7 +5,7 @@ Source of truth for *what* and *how*: [docs/PRD.md](docs/PRD.md) (product) and
 This file only tracks *status* — don't duplicate design detail here, update SPEC.md
 instead if the design itself changes.
 
-**Last updated:** 2026-07-04 · **Tests:** 113 passing (`npm test`)
+**Last updated:** 2026-07-05 · **Tests:** 113 passing (`npm test`)
 
 ## Status
 
@@ -266,6 +266,25 @@ the rest of the app.
   No aspect lines (out of scope per PRD, not reconsidered).
 - **`src/results/ResultsScreen.tsx`**: renders `ChartWheel` between the birth
   moment and the placement list.
+
+## Quiz back button + site header (done 2026-07-05)
+
+Two small additions requested after M4: a back button through the quiz
+(closing the "forward-only" gap noted in M4), and a persistent link back to
+`bradleytjandra.com` so the app reads as a subpage rather than a standalone
+site.
+
+- **`src/quiz/ui/QuizFlow.tsx`**: `handleBack` just decrements `index`;
+  `pastBreather` is left alone, so stepping back from just past the breather
+  lands on its index without re-showing it (the existing `showBreather` check
+  already guards on `!pastBreather`). Hidden at question 1 (`index === 0`).
+- **`src/quiz/ui/QuestionCard.tsx`**, **`Breather.tsx`**: take an optional
+  `onBack` and render a `.back-button` when present.
+- **`src/App.tsx`**: a `.site-header` above `<main>`, present on every phase
+  (quiz/loading/results/error), linking to `https://bradleytjandra.com/`.
+- Verified in the browser: no back button on question 1, back button appears
+  from question 2 on, clicking it returns to question 1 with the same
+  question text; header link present and correct on all phases.
 - Verified: `wheelLayout.test.ts` checks the geometry at the four cardinal
   points and the lane-collision behavior. In the browser, the preview tool's
   screenshot capture was stuck for the whole session (confirmed unrelated to
