@@ -370,9 +370,16 @@ originally assumed in the docs; CLAUDE.md and this file corrected to match.
 
 ### Feature/product to-dos
 
-- Weak recency weighting in the search: when two candidate birth years
-  score about equally, prefer the more recent one (e.g. 1990 over 1700).
-  Small nudge only, shouldn't override a genuinely better match.
+- ~~Weak recency weighting in the search~~ — done 2026-07-05:
+  `scoring.ts` adds `recencyBonus(year)`, a term that ramps linearly from 0
+  (1600) to 0.01 (2100) — far below the smallest real reward (a social-tier
+  sign match is worth 4), so it only breaks near-ties and never overrides a
+  genuinely better astrological match. Added into both the actual score
+  (`stage4.ts`'s `bestMomentInInterval`) and Stage 1's upper bound
+  (`stage1.ts`'s `yearUpperBound`, same term per year) so branch-and-bound's
+  optimality guarantee still holds. `stage1.test.ts`'s bound assertions
+  updated to expect `maxScore + recencyBonus(year)` instead of a bare
+  `maxScore` ceiling.
 - ~~Results page: add a "redo the quiz" button.~~ and ~~Dark/light mode~~ —
   done 2026-07-05, see "Redo-quiz button + dark/light mode" above.
 - ~~Quiz back button: when going back, keep the previously-selected option

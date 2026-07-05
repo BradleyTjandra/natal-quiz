@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { sunWindow, yearUpperBound, rankYears } from "./stage1.ts";
-import { maxScore, type Target } from "./scoring.ts";
+import { maxScore, recencyBonus, type Target } from "./scoring.ts";
 import { eclipticLongitude } from "./sky.ts";
 import { signIndexOf } from "./signs.ts";
 
@@ -34,10 +34,12 @@ describe("sunWindow", () => {
 });
 
 describe("yearUpperBound", () => {
-  it("never exceeds the perfect score (a valid upper bound)", () => {
+  it("never exceeds the perfect score plus that year's recency bonus (a valid upper bound)", () => {
     const max = maxScore(target);
     for (let year = 1900; year < 1950; year++) {
-      expect(yearUpperBound(target, year)).toBeLessThanOrEqual(max + 1e-9);
+      expect(yearUpperBound(target, year)).toBeLessThanOrEqual(
+        max + recencyBonus(year) + 1e-9,
+      );
     }
   });
 
@@ -52,12 +54,13 @@ describe("yearUpperBound", () => {
         target.mars!.sign,
       );
       const bound = yearUpperBound(target, year);
+      const ceiling = max + recencyBonus(year);
 
       if (marsReachable) {
-        expect(bound).toBeCloseTo(max);
+        expect(bound).toBeCloseTo(ceiling);
         sawReachable = true;
       } else {
-        expect(bound).toBeLessThan(max);
+        expect(bound).toBeLessThan(ceiling);
         sawUnreachable = true;
       }
     }
@@ -78,7 +81,7 @@ describe("rankYears", () => {
 
   it("puts a genuinely Mars-reachable year at the very top", () => {
     const top = ranked[0];
-    expect(top.bound).toBeCloseTo(maxScore(target));
+    expect(top.bound).toBeCloseTo(maxScore(target) + recencyBonus(top.year));
     const w = sunWindow(top.year, target.sun!.sign);
     expect(marsSignsSampled(w.start, w.end).has(target.mars!.sign)).toBe(true);
   });

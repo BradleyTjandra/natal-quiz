@@ -20,7 +20,7 @@
 
 import { SiderealTime, e_tilt, MakeTime } from "astronomy-engine";
 import { computeChart, type Chart, type ChartBody } from "./sky.ts";
-import { scoreChart, type Target } from "./scoring.ts";
+import { scoreChart, recencyBonus, type Target } from "./scoring.ts";
 import { CITIES, type City } from "./cities.ts";
 import type { Interval } from "./stage2.ts";
 import { normalizeDegrees } from "./signs.ts";
@@ -157,7 +157,7 @@ export function bestMomentInInterval(
   for (const city of CITIES) {
     for (const date of ascCrossings(city, targetLon, interval)) {
       const chart = computeChart(date, city.latitude, city.longitudeEast, bodies);
-      const score = scoreChart(target, chart);
+      const score = scoreChart(target, chart) + recencyBonus(date.getFullYear());
       if (!best || score > best.score) {
         best = { date, city, chart, score };
       }

@@ -13,7 +13,13 @@
 
 import { SearchSunLongitude } from "astronomy-engine";
 import { INGRESS_RANGE, signsInWindow } from "./ingressTables.ts";
-import { fullReward, reachableReward, type Target, type Placement } from "./scoring.ts";
+import {
+  fullReward,
+  reachableReward,
+  recencyBonus,
+  type Target,
+  type Placement,
+} from "./scoring.ts";
 
 export interface SunWindow {
   start: Date;
@@ -65,7 +71,10 @@ export function yearUpperBound(target: Target, year: number): number {
       bound += fullReward(key, t);
     }
   }
-  return bound;
+  // Add the same recency term the real score gets (stage4), so this stays a
+  // valid *upper* bound: a year's actual score is never more than its raw
+  // placement ceiling plus its own recency bonus.
+  return bound + recencyBonus(year);
 }
 
 export interface RankedYear {
