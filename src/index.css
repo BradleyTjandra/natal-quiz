@@ -69,6 +69,48 @@ h2 {
   font-size: 1rem;
 }
 
+.site-header {
+  border-bottom: 1px solid var(--card-border);
+}
+
+.site-header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+.site-header a {
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.site-header a:hover {
+  color: var(--gold-bright);
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.back-button {
+  display: block;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: var(--gold-bright);
+  opacity: 1;
+  text-decoration: underline;
+}
+
 .question-text {
   font-size: 1.2rem;
   line-height: 1.5;

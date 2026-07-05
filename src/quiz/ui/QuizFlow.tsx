@@ -27,14 +27,19 @@ export default function QuizFlow({ onComplete }: Props) {
     }
   }
 
+  // Stepping back from just past the breather (pastBreather already true)
+  // lands on the breather's index but skips re-showing it, since showBreather
+  // checks !pastBreather too.
+  const handleBack = index > 0 ? () => setIndex(index - 1) : undefined;
+
   if (showBreather) {
-    return <Breather onContinue={() => setPastBreather(true)} />;
+    return <Breather onContinue={() => setPastBreather(true)} onBack={handleBack} />;
   }
 
   return (
     <div className="quiz-flow">
       <ProgressBar current={index} total={QUESTIONS.length} />
-      <QuestionCard question={QUESTIONS[index]} onAnswer={handleAnswer} />
+      <QuestionCard question={QUESTIONS[index]} onAnswer={handleAnswer} onBack={handleBack} />
     </div>
   );
 }
