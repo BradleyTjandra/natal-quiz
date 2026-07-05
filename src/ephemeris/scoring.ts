@@ -10,6 +10,7 @@
 
 import { signIndexOf, degreeInSign } from "./signs.ts";
 import type { Chart, ChartBody } from "./sky.ts";
+import { INGRESS_RANGE } from "./ingressTables.ts";
 
 export type Placement =
   | "sun"
@@ -120,6 +121,20 @@ export function reachableReward(
     return (SIGN_WEIGHT[tier] + DEGREE_WEIGHT[tier]) * maxR;
   }
   return reachableSigns.has(target.sign) ? fullReward(placement, target) : 0;
+}
+
+// A weak nudge toward more recent birth years (PLAN.md "Feature/product
+// to-dos"): most quiz-takers were born recently, so when two years otherwise
+// score about the same, prefer the newer one. Scaled to the configured year
+// range and capped far below the smallest real reward (a single social-tier
+// sign match is SIGN_WEIGHT.social + DEGREE_WEIGHT.social = 4) so it can only
+// break near-ties, never override a genuinely better astrological match.
+const RECENCY_WEIGHT = 0.01;
+
+export function recencyBonus(year: number): number {
+  const span = INGRESS_RANGE.endYear - INGRESS_RANGE.startYear;
+  const t = (year - INGRESS_RANGE.startYear) / span;
+  return RECENCY_WEIGHT * Math.max(0, Math.min(1, t));
 }
 
 // The score a perfect chart (every placement exact) would earn for this target.
