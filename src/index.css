@@ -1,10 +1,40 @@
 :root {
-  color-scheme: light dark;
-  font-family: system-ui, sans-serif;
+  color-scheme: dark;
+  font-family: "EB Garamond", Georgia, serif;
+
+  --bg-deep: #0a0d20;
+  --bg-mid: #131834;
+  --ink: #ece7f7;
+  --ink-dim: #b6b0d6;
+  --gold: #cda45e;
+  --gold-bright: #e9c987;
+  --card-bg: rgba(20, 24, 54, 0.55);
+  --card-border: rgba(205, 164, 94, 0.35);
+
+  --fire: #d1685a;
+  --earth: #85996a;
+  --air: #d9c479;
+  --water: #6f93c0;
 }
 
 body {
   margin: 0;
+  color: var(--ink);
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse at top, var(--bg-mid), var(--bg-deep) 65%),
+    radial-gradient(1px 1px at 10% 15%, #fff, transparent),
+    radial-gradient(1px 1px at 30% 70%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 55% 25%, #fff, transparent),
+    radial-gradient(1px 1px at 70% 85%, #fff, transparent),
+    radial-gradient(1px 1px at 85% 40%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 95% 65%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 90%, #fff, transparent),
+    radial-gradient(1px 1px at 45% 50%, #fff, transparent);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
 }
 
 main {
@@ -13,10 +43,37 @@ main {
   padding: 1.5rem 1rem 3rem;
 }
 
+h1,
+h2 {
+  font-family: "Cinzel", "EB Garamond", serif;
+  font-weight: 600;
+  color: var(--gold-bright);
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
+.divider {
+  text-align: center;
+  color: var(--gold);
+  opacity: 0.7;
+  margin: 1.75rem 0 -0.5rem;
+  font-size: 1rem;
+}
+
 .question-text {
-  font-size: 1.15rem;
-  line-height: 1.4;
+  font-size: 1.2rem;
+  line-height: 1.5;
   margin-bottom: 1.25rem;
+  text-align: center;
 }
 
 .options {
@@ -27,16 +84,20 @@ main {
 
 .option-button {
   padding: 0.9rem 1rem;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-family: inherit;
   text-align: left;
-  border: 1px solid #8884;
+  color: var(--ink);
+  border: 1px solid var(--card-border);
   border-radius: 0.5rem;
-  background: none;
+  background: var(--card-bg);
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .option-button:hover {
-  background: #8881;
+  border-color: var(--gold);
+  background: rgba(205, 164, 94, 0.12);
 }
 
 .progress-wrap {
@@ -45,7 +106,7 @@ main {
 
 .progress-bar {
   height: 6px;
-  background: #8883;
+  background: rgba(205, 164, 94, 0.2);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -53,12 +114,13 @@ main {
 .progress-label {
   margin: 0.4rem 0 0;
   font-size: 0.85rem;
-  opacity: 0.7;
+  color: var(--ink-dim);
+  text-align: center;
 }
 
 .progress-fill {
   height: 100%;
-  background: currentColor;
+  background: linear-gradient(90deg, var(--gold), var(--gold-bright));
   transition: width 0.2s ease;
 }
 
@@ -68,7 +130,7 @@ main {
 }
 
 .breather-sub {
-  opacity: 0.7;
+  color: var(--ink-dim);
 }
 
 .loading-screen {
@@ -80,8 +142,8 @@ main {
   width: 2.5rem;
   height: 2.5rem;
   margin: 0 auto 1.5rem;
-  border: 3px solid #8884;
-  border-top-color: currentColor;
+  border: 3px solid rgba(205, 164, 94, 0.25);
+  border-top-color: var(--gold-bright);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -94,6 +156,7 @@ main {
 
 .birth-moment {
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .chart-wheel {
@@ -101,27 +164,53 @@ main {
   width: 100%;
   max-width: 400px;
   margin: 0 auto 1.5rem;
+  filter: drop-shadow(0 0 18px rgba(205, 164, 94, 0.2));
 }
 
 .wheel-ring {
   fill: none;
-  stroke: currentColor;
-  stroke-opacity: 0.4;
+  stroke: var(--gold);
+  stroke-opacity: 0.6;
+}
+
+.wedge-tint {
+  stroke: none;
+}
+
+.wedge-fire {
+  fill: var(--fire);
+  fill-opacity: 0.16;
+}
+
+.wedge-earth {
+  fill: var(--earth);
+  fill-opacity: 0.16;
+}
+
+.wedge-air {
+  fill: var(--air);
+  fill-opacity: 0.16;
+}
+
+.wedge-water {
+  fill: var(--water);
+  fill-opacity: 0.16;
 }
 
 .house-cusp {
-  stroke: currentColor;
+  stroke: var(--ink-dim);
   stroke-opacity: 0.3;
   stroke-width: 1;
 }
 
 .house-cusp-asc {
-  stroke-opacity: 0.8;
+  stroke: var(--gold-bright);
+  stroke-opacity: 0.9;
   stroke-width: 2.5;
 }
 
 .asc-marker {
-  stroke: currentColor;
+  stroke: var(--gold-bright);
   stroke-width: 1.5;
   stroke-dasharray: 4 3;
 }
@@ -130,26 +219,29 @@ main {
 .sign-glyph,
 .planet-glyph,
 .house-label {
-  fill: currentColor;
   text-anchor: middle;
   dominant-baseline: middle;
 }
 
 .house-label {
   font-size: 11px;
-  fill-opacity: 0.6;
+  fill: var(--ink-dim);
 }
 
 .asc-label {
   font-size: 11px;
+  fill: var(--gold-bright);
+  font-family: "Cinzel", serif;
 }
 
 .sign-glyph {
   font-size: 18px;
+  fill: var(--gold-bright);
 }
 
 .planet-glyph {
   font-size: 20px;
+  fill: var(--ink);
 }
 
 .birth-moment-line {
@@ -161,21 +253,30 @@ main {
   list-style: none;
   padding: 0;
   margin: 0 0 1.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  background: var(--card-bg);
 }
 
 .placement-list li,
 .house-table li {
   display: flex;
   justify-content: space-between;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid #8882;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.placement-list li:last-child,
+.house-table li:last-child {
+  border-bottom: none;
 }
 
 .verification-hint {
-  opacity: 0.7;
+  color: var(--ink-dim);
   font-style: italic;
+  text-align: center;
 }
 
 .error-message {
-  color: #c0392b;
+  color: #e08070;
 }

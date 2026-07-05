@@ -19,10 +19,12 @@ export default function ResultsScreen({ candidate }: Props) {
       <h1>Your true birth moment</h1>
       <BirthMoment date={candidate.date} city={candidate.city} />
 
+      <div className="divider" aria-hidden="true">✦</div>
       <h2>Your chart</h2>
       <ChartWheel chart={candidate.chart} />
       <PlacementList chart={candidate.chart} />
 
+      <div className="divider" aria-hidden="true">✦</div>
       <h2>Your houses</h2>
       <HouseTable ascSignIndex={ascSignIndex} />
 
