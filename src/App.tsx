@@ -26,14 +26,21 @@ function App() {
   }
 
   return (
-    <main>
-      {phase.step === "quiz" && <QuizFlow onComplete={handleComplete} />}
-      {phase.step === "loading" && <LoadingScreen />}
-      {phase.step === "results" && <ResultsScreen candidate={phase.candidate} />}
-      {phase.step === "error" && (
-        <p className="error-message">Something went wrong: {phase.message}</p>
-      )}
-    </main>
+    <>
+      <header className="site-header">
+        <div className="site-header-inner">
+          <a href="https://bradleytjandra.com/">← bradleytjandra.com</a>
+        </div>
+      </header>
+      <main>
+        {phase.step === "quiz" && <QuizFlow onComplete={handleComplete} />}
+        {phase.step === "loading" && <LoadingScreen />}
+        {phase.step === "results" && <ResultsScreen candidate={phase.candidate} />}
+        {phase.step === "error" && (
+          <p className="error-message">Something went wrong: {phase.message}</p>
+        )}
+      </main>
+    </>
   );
 }
 

@@ -13,6 +13,46 @@ main {
   padding: 1.5rem 1rem 3rem;
 }
 
+.site-header {
+  border-bottom: 1px solid #8882;
+}
+
+.site-header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+.site-header a {
+  font-size: 0.85rem;
+  color: inherit;
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.site-header a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.back-button {
+  display: block;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 .question-text {
   font-size: 1.15rem;
   line-height: 1.4;
