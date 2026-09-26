@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QUESTIONS, BREATHER_AFTER } from "../questions.ts";
 import type { Answers } from "../score.ts";
+import { loadProgress, saveProgress, clearProgress } from "../../storage.ts";
 import QuestionCard from "./QuestionCard.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Breather from "./Breather.tsx";
@@ -10,9 +11,18 @@ interface Props {
 }
 
 export default function QuizFlow({ onComplete }: Props) {
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({});
-  const [pastBreather, setPastBreather] = useState(false);
+  // Lazy-loaded once on mount, not on every render.
+  const [saved] = useState(loadProgress);
+  const [index, setIndex] = useState(saved?.index ?? 0);
+  const [answers, setAnswers] = useState<Answers>(saved?.answers ?? {});
+  const [pastBreather, setPastBreather] = useState(saved?.pastBreather ?? false);
+
+  // Re-save on every change so switching apps or refreshing mid-quiz (easy to
+  // do by accident on mobile) resumes at the same question instead of
+  // starting over.
+  useEffect(() => {
+    saveProgress({ index, answers, pastBreather });
+  }, [index, answers, pastBreather]);
 
   const showBreather = index === BREATHER_AFTER && !pastBreather;
 
@@ -21,6 +31,7 @@ export default function QuizFlow({ onComplete }: Props) {
     const next = { ...answers, [question.id]: originalIndex };
     setAnswers(next);
     if (index + 1 === QUESTIONS.length) {
+      clearProgress(); // App takes over persistence once results are computed
       onComplete(next);
     } else {
       setIndex(index + 1);
